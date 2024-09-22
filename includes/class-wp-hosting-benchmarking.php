@@ -79,6 +79,9 @@ class Wp_Hosting_Benchmarking {
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
 		$this->define_cron_hooks();
+
+		$this->db = new Wp_Hosting_Benchmarking_DB();
+        $this->api = new Wp_Hosting_Benchmarking_API();
 	}
 
 	/**
@@ -177,9 +180,7 @@ class Wp_Hosting_Benchmarking {
     }
 
     public function execute_latency_test() {
-        $api = new Wp_Hosting_Benchmarking_API();
-        $db = new Wp_Hosting_Benchmarking_DB();
-
+    
         $endpoints = $api->get_gcp_endpoints();
 		error_log("GCP ENDPOINTS RAN");
 		error_log(print_r($endpoints,true));
