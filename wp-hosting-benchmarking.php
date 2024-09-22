@@ -9,7 +9,7 @@
  * that starts the plugin.
  *
  * @link              https://fastestwordpress.com
- * @since             1.0.0
+ * @since             1.0.1
  * @package           Wp_Hosting_Benchmarking
  *
  * @wordpress-plugin
