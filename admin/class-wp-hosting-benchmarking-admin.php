@@ -108,7 +108,7 @@ class Wp_Hosting_Benchmarking_Admin {
   /**
      * Add admin menu item for WP Benchmarking
      */
-    public function add_admin_menu() {
+    public function add_plugin_admin_menu() {
         add_menu_page(
             'WP Benchmarking',
             'WP Benchmarking',
