@@ -182,10 +182,10 @@ class Wp_Hosting_Benchmarking {
 
         $endpoints = $api->get_gcp_endpoints();
 		error_log("GCP ENDPOINTS RAN");
-		error_log(print_r($endpoints));
+		error_log(print_r($endpoints,true));
         foreach ($endpoints as $endpoint) {
             $latency = $api->ping_endpoint($endpoint['URL']);
-			error_log(print_r($latency));
+			error_log(print_r($latency,true));
             if ($latency !== false) {
                 $db->insert_result($endpoint['RegionName'], $latency);
             }
