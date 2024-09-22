@@ -7,13 +7,27 @@ class Wp_Hosting_Benchmarking_API {
             return false;
         }
         $body = wp_remote_retrieve_body($response);
-        return json_decode($body, true);
+        $endpoints = json_decode($body, true);
+        
+        if (!is_array($endpoints)) {
+            return false;
+        }
+
+        $formatted_endpoints = [];
+        foreach ($endpoints as $region_code => $region_data) {
+            $formatted_endpoints[] = [
+                'region' => $region_data['Region'],
+                'region_name' => $region_data['RegionName'],
+                'url' => $region_data['URL']
+            ];
+        }
+
+        return $formatted_endpoints;
     }
 
-    public function ping_endpoint($endpoint) {
-        $url = "https://{$endpoint}/api/ping";
+    public function ping_endpoint($url) {
         $start_time = microtime(true);
-        $response = wp_remote_get($url);
+        $response = wp_remote_get($url . '/api/ping');
         $end_time = microtime(true);
         if (is_wp_error($response)) {
             return false;
@@ -21,4 +35,3 @@ class Wp_Hosting_Benchmarking_API {
         return round(($end_time - $start_time) * 1000, 1); // Convert to milliseconds and round to 1 decimal place
     }
 }
-
