@@ -50,7 +50,73 @@ jQuery(document).ready(function($) {
 var countdownInterval;
 var lastResults = {};
 
-// ... (previous JavaScript code remains the same)
+function updateButtonState(isRunning) {
+        $('#start-test').prop('disabled', isRunning).toggle(!isRunning);
+        $('#stop-test').toggle(isRunning);
+    }
+
+    $('#start-test').on('click', function() {
+        $.ajax({
+            url: wpHostingBenchmarking.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'start_latency_test',
+                nonce: wpHostingBenchmarking.nonce
+            },
+            success: function(response) {
+                if (response.success) {
+                    $('#test-status').text('Test started. Running for 1 hour.');
+                    updateButtonState(true);
+                    startCountdown(3600); // 1 hour in seconds
+                } else {
+                    alert(response.data);
+                }
+            }
+        });
+    });
+
+    $('#stop-test').on('click', function() {
+        $.ajax({
+            url: wpHostingBenchmarking.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'stop_latency_test',
+                nonce: wpHostingBenchmarking.nonce
+            },
+            success: function(response) {
+                if (response.success) {
+                    $('#test-status').text('Test stopped.');
+                    updateButtonState(false);
+                    stopCountdown();
+                }
+            }
+        });
+    });
+
+    function startCountdown(duration) {
+        var timer = duration, minutes, seconds;
+        countdownInterval = setInterval(function () {
+            minutes = parseInt(timer / 60, 10);
+            seconds = parseInt(timer % 60, 10);
+
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+
+            $('#countdown').text(minutes + ":" + seconds);
+
+            if (--timer < 0) {
+                stopCountdown();
+                updateButtonState(false);
+                $('#test-status').text('Test completed.');
+            }
+        }, 1000);
+    }
+
+    function stopCountdown() {
+        clearInterval(countdownInterval);
+        $('#countdown').text('');
+    }
+
 
 function updateResults() {
     $.ajax({
