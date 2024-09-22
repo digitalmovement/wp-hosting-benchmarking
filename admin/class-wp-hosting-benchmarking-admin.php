@@ -99,5 +99,31 @@ class Wp_Hosting_Benchmarking_Admin {
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/wp-hosting-benchmarking-admin.js', array( 'jquery' ), $this->version, false );
 
 	}
+  /**
+     * Add admin menu item for WP Benchmarking
+     */
+    public function add_admin_menu() {
+        add_menu_page(
+            'WP Benchmarking',
+            'WP Benchmarking',
+            'manage_options',
+            'wp-hosting-benchmarking',
+            array( $this, 'display_admin_page' ),
+            'dashicons-performance',
+            999 // Set a high number to ensure it's the last menu item
+        );
+    }
 
+    /**
+     * Display admin page content
+     */
+    public function display_admin_page() {
+        ?>
+        <div class="wrap">
+            <h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
+            <p>Welcome to the WP Benchmarking admin panel. Configure your benchmarking settings here.</p>
+            <!-- Add your plugin's admin interface here -->
+        </div>
+        <?php
+    }
 }
