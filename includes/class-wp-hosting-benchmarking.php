@@ -99,29 +99,12 @@ class Wp_Hosting_Benchmarking {
 	 */
 	private function load_dependencies() {
 
-		/**
-		 * The class responsible for orchestrating the actions and filters of the
-		 * core plugin.
-		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-wp-hosting-benchmarking-loader.php';
-
-		/**
-		 * The class responsible for defining internationalization functionality
-		 * of the plugin.
-		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-wp-hosting-benchmarking-i18n.php';
-
-		/**
-		 * The class responsible for defining all actions that occur in the admin area.
-		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-wp-hosting-benchmarking-admin.php';
-
-		/**
-		 * The class responsible for defining all actions that occur in the public-facing
-		 * side of the site.
-		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-wp-hosting-benchmarking-public.php';
-
+		require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-wp-hosting-benchmarking-loader.php';
+        require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-wp-hosting-benchmarking-admin.php';
+        require_once plugin_dir_path(dirname(__FILE__)) . 'public/class-wp-hosting-benchmarking-public.php';
+        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-wp-hosting-benchmarking-api.php';
+        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-wp-hosting-benchmarking-db.php';
+ 
 		$this->loader = new Wp_Hosting_Benchmarking_Loader();
 
 	}
@@ -152,12 +135,13 @@ class Wp_Hosting_Benchmarking {
 	 */
 	private function define_admin_hooks() {
 
-		$plugin_admin = new Wp_Hosting_Benchmarking_Admin( $this->get_plugin_name(), $this->get_version() );
-
-		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
-		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
-		// Add this line to create the admin menu
-		$this->loader->add_action( 'admin_menu', $plugin_admin, 'add_admin_menu' );
+		$plugin_admin = new Wp_Hosting_Benchmarking_Admin($this->get_plugin_name(), $this->get_version());
+        $this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_styles');
+        $this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts');
+        $this->loader->add_action('admin_menu', $plugin_admin, 'add_plugin_admin_menu');
+        $this->loader->add_action('wp_ajax_start_latency_test', $plugin_admin, 'start_latency_test');
+        $this->loader->add_action('wp_ajax_get_latest_results', $plugin_admin, 'get_latest_results');
+        $this->loader->add_action('wp_ajax_delete_all_results', $plugin_admin, 'delete_all_results');
 	}
 
 	/**

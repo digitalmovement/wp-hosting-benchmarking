@@ -51,6 +51,8 @@ class Wp_Hosting_Benchmarking_Admin {
 
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
+		$this->api = new Wp_Hosting_Benchmarking_API();
+        $this->db = new Wp_Hosting_Benchmarking_DB();
 
 	}
 
@@ -96,8 +98,12 @@ class Wp_Hosting_Benchmarking_Admin {
 		 * class.
 		 */
 
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/wp-hosting-benchmarking-admin.js', array( 'jquery' ), $this->version, false );
-
+		 wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/wp-hosting-benchmarking-admin.js', array('jquery'), $this->version, false);
+		 wp_localize_script($this->plugin_name, 'wpHostingBenchmarking', array(
+			 'ajax_url' => admin_url('admin-ajax.php'),
+			 'nonce' => wp_create_nonce('wp_hosting_benchmarking_nonce')
+		 ));
+ 
 	}
   /**
      * Add admin menu item for WP Benchmarking
@@ -108,7 +114,7 @@ class Wp_Hosting_Benchmarking_Admin {
             'WP Benchmarking',
             'manage_options',
             'wp-hosting-benchmarking',
-            array( $this, 'display_admin_page' ),
+            array( $this, 'display_plugin_admin_page' ),
             'dashicons-performance',
             999 // Set a high number to ensure it's the last menu item
         );
@@ -117,13 +123,28 @@ class Wp_Hosting_Benchmarking_Admin {
     /**
      * Display admin page content
      */
-    public function display_admin_page() {
-        ?>
-        <div class="wrap">
-            <h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
-            <p>Welcome to the WP Benchmarking admin panel. Configure your benchmarking settings here.</p>
-            <!-- Add your plugin's admin interface here -->
-        </div>
-        <?php
+
+	public function display_plugin_admin_page() {
+        include_once 'partials/wp-hosting-benchmarking-admin-display.php';
     }
+
+    public function start_latency_test() {
+        check_ajax_referer('wp_hosting_benchmarking_nonce', 'nonce');
+        // Implement the logic to start the latency test
+        // This should set up a WordPress cron job to run every 5 minutes for an hour
+        wp_send_json_success('Test started successfully');
+    }
+
+    public function get_latest_results() {
+        check_ajax_referer('wp_hosting_benchmarking_nonce', 'nonce');
+        $results = $this->db->get_latest_results();
+        wp_send_json_success($results);
+    }
+
+    public function delete_all_results() {
+        check_ajax_referer('wp_hosting_benchmarking_nonce', 'nonce');
+        $this->db->delete_all_results();
+        wp_send_json_success('All results deleted');
+    }
+
 }
