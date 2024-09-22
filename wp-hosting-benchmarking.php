@@ -16,7 +16,7 @@
  * Plugin Name:       Hosting Speed and Benchmark Analyzer
  * Plugin URI:        https://fastestwordpress.com/wp-hosting-benchmarking
  * Description:       Hosting Speed and Benchmark Analyzer is the ultimate WordPress plugin to measure and benchmark your website’s hosting performance. Got a slow site then this is the plugin that can help you find out if you hosting company is a fault.
- * Version:           1.0.0
+ * Version:           1.0.1
  * Author:            Fastest WordPress
  * Author URI:        https://fastestwordpress.com/
  * License:           GPL-2.0+
