@@ -78,7 +78,7 @@ class Wp_Hosting_Benchmarking {
 		$this->set_locale();
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
-
+		$this->define_cron_hooks();
 	}
 
 	/**
@@ -141,8 +141,10 @@ class Wp_Hosting_Benchmarking {
         $this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts');
         $this->loader->add_action('admin_menu', $plugin_admin, 'add_plugin_admin_menu');
         $this->loader->add_action('wp_ajax_start_latency_test', $plugin_admin, 'start_latency_test');
+        $this->loader->add_action('wp_ajax_stop_latency_test', $plugin_admin, 'stop_latency_test');
         $this->loader->add_action('wp_ajax_get_latest_results', $plugin_admin, 'get_latest_results');
         $this->loader->add_action('wp_ajax_delete_all_results', $plugin_admin, 'delete_all_results');
+		
 	}
 
 	/**
@@ -160,6 +162,39 @@ class Wp_Hosting_Benchmarking {
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 
 	}
+
+	private function define_cron_hooks() {
+        $this->loader->add_action('wp_hosting_benchmarking_cron_hook', $this, 'execute_latency_test');
+        $this->loader->add_filter('cron_schedules', $this, 'add_cron_interval');
+    }
+
+    public function add_cron_interval($schedules) {
+        $schedules['five_minutes'] = array(
+            'interval' => 300,
+            'display'  => esc_html__('Every Five Minutes'),
+        );
+        return $schedules;
+    }
+
+    public function execute_latency_test() {
+        $api = new Wp_Hosting_Benchmarking_API();
+        $db = new Wp_Hosting_Benchmarking_DB();
+
+        $endpoints = $api->get_gcp_endpoints();
+        foreach ($endpoints as $endpoint) {
+            $latency = $api->ping_endpoint($endpoint['ip']);
+            if ($latency !== false) {
+                $db->insert_result($endpoint['region'], $latency);
+            }
+        }
+
+        // Check if it's time to stop the test
+        $start_time = get_option('wp_hosting_benchmarking_start_time');
+        if (time() - $start_time >= 3600) { // 1 hour
+            wp_clear_scheduled_hook('wp_hosting_benchmarking_cron_hook');
+            delete_option('wp_hosting_benchmarking_start_time');
+        }
+    }
 
 	/**
 	 * Run the loader to execute all of the hooks with WordPress.

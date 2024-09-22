@@ -130,10 +130,25 @@ class Wp_Hosting_Benchmarking_Admin {
 
     public function start_latency_test() {
         check_ajax_referer('wp_hosting_benchmarking_nonce', 'nonce');
-        // Implement the logic to start the latency test
-        // This should set up a WordPress cron job to run every 5 minutes for an hour
-        wp_send_json_success('Test started successfully');
+
+        if (!wp_next_scheduled('wp_hosting_benchmarking_cron_hook')) {
+            wp_schedule_event(time(), 'five_minutes', 'wp_hosting_benchmarking_cron_hook');
+            update_option('wp_hosting_benchmarking_start_time', time());
+            wp_send_json_success('Test started successfully');
+        } else {
+            wp_send_json_error('Test is already running');
+        }
     }
+
+	
+    public function stop_latency_test() {
+        check_ajax_referer('wp_hosting_benchmarking_nonce', 'nonce');
+
+        wp_clear_scheduled_hook('wp_hosting_benchmarking_cron_hook');
+        delete_option('wp_hosting_benchmarking_start_time');
+        wp_send_json_success('Test stopped successfully');
+    }
+
 
     public function get_latest_results() {
         check_ajax_referer('wp_hosting_benchmarking_nonce', 'nonce');
