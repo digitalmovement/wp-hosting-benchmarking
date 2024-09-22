@@ -22,37 +22,17 @@
  */
 class Wp_Hosting_Benchmarking_Admin {
 
-	/**
-	 * The ID of this plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var      string    $plugin_name    The ID of this plugin.
-	 */
 	private $plugin_name;
+    private $version;
+    private $db;
+    private $api;
 
-	/**
-	 * The version of this plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var      string    $version    The current version of this plugin.
-	 */
-	private $version;
-
-	/**
-	 * Initialize the class and set its properties.
-	 *
-	 * @since    1.0.0
-	 * @param      string    $plugin_name       The name of this plugin.
-	 * @param      string    $version    The version of this plugin.
-	 */
 	public function __construct( $plugin_name, $version ) {
 
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
-		$this->api = new Wp_Hosting_Benchmarking_API();
-        $this->db = new Wp_Hosting_Benchmarking_DB();
+		$this->db = $db;
+        $this->api = $api;
 
 	}
 
@@ -128,12 +108,22 @@ class Wp_Hosting_Benchmarking_Admin {
         include_once 'partials/wp-hosting-benchmarking-admin-display.php';
     }
 
-    public function start_latency_test() {
+	public function start_latency_test() {
         check_ajax_referer('wp_hosting_benchmarking_nonce', 'nonce');
 
         if (!wp_next_scheduled('wp_hosting_benchmarking_cron_hook')) {
             wp_schedule_event(time(), 'five_minutes', 'wp_hosting_benchmarking_cron_hook');
             update_option('wp_hosting_benchmarking_start_time', time());
+            
+            // Run the first test immediately
+            $endpoints = $this->api->get_gcp_endpoints();
+            foreach ($endpoints as $endpoint) {
+                $latency = $this->api->ping_endpoint($endpoint['url']);
+                if ($latency !== false) {
+                    $this->db->insert_result($endpoint['region_name'], $latency);
+                }
+            }
+            
             wp_send_json_success('Test started successfully');
         } else {
             wp_send_json_error('Test is already running');

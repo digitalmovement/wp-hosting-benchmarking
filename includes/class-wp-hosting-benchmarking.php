@@ -29,43 +29,13 @@
  */
 class Wp_Hosting_Benchmarking {
 
-	/**
-	 * The loader that's responsible for maintaining and registering all hooks that power
-	 * the plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   protected
-	 * @var      Wp_Hosting_Benchmarking_Loader    $loader    Maintains and registers all hooks for the plugin.
-	 */
-	protected $loader;
+    private $loader;
+    private $plugin_name;
+    private $version;
+    private $db;
+    private $api;
 
-	/**
-	 * The unique identifier of this plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   protected
-	 * @var      string    $plugin_name    The string used to uniquely identify this plugin.
-	 */
-	protected $plugin_name;
-
-	/**
-	 * The current version of the plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   protected
-	 * @var      string    $version    The current version of the plugin.
-	 */
-	protected $version;
-
-	/**
-	 * Define the core functionality of the plugin.
-	 *
-	 * Set the plugin name and the plugin version that can be used throughout the plugin.
-	 * Load the dependencies, define the locale, and set the hooks for the admin area and
-	 * the public-facing side of the site.
-	 *
-	 * @since    1.0.0
-	 */
+	
 	public function __construct() {
 		if ( defined( 'WP_HOSTING_BENCHMARKING_VERSION' ) ) {
 			$this->version = WP_HOSTING_BENCHMARKING_VERSION;
@@ -76,12 +46,13 @@ class Wp_Hosting_Benchmarking {
 
 		$this->load_dependencies();
 		$this->set_locale();
+		$this->init_components();
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
 		$this->define_cron_hooks();
 
-		$this->db = new Wp_Hosting_Benchmarking_DB();
-        $this->api = new Wp_Hosting_Benchmarking_API();
+		//$this->db = new Wp_Hosting_Benchmarking_DB();
+       // $this->api = new Wp_Hosting_Benchmarking_API();
 	}
 
 	/**
@@ -112,6 +83,11 @@ class Wp_Hosting_Benchmarking {
 		$this->loader = new Wp_Hosting_Benchmarking_Loader();
 
 	}
+
+	private function init_components() {
+        $this->db = new Wp_Hosting_Benchmarking_DB();
+        $this->api = new Wp_Hosting_Benchmarking_API();
+    }
 
 	/**
 	 * Define the locale for this plugin for internationalization.
