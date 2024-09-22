@@ -100,11 +100,12 @@ class Wp_Hosting_Benchmarking {
 	private function load_dependencies() {
 
 		require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-wp-hosting-benchmarking-loader.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-wp-hosting-benchmarking-i18n.php';
         require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-wp-hosting-benchmarking-admin.php';
         require_once plugin_dir_path(dirname(__FILE__)) . 'public/class-wp-hosting-benchmarking-public.php';
-        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-wp-hosting-benchmarking-api.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-wp-hosting-benchmarking-api.php';
         require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-wp-hosting-benchmarking-db.php';
- 
+
 		$this->loader = new Wp_Hosting_Benchmarking_Loader();
 
 	}
