@@ -1,7 +1,7 @@
 <?php
 
 class Wp_Hosting_Benchmarking_DB {
-    public function create_tables() {
+    public function create_table() {
         global $wpdb;
         $charset_collate = $wpdb->get_charset_collate();
         $table_name = $wpdb->prefix . 'hosting_benchmarking_results';
@@ -11,7 +11,9 @@ class Wp_Hosting_Benchmarking_DB {
             test_time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
             region_name varchar(255) NOT NULL,
             latency float NOT NULL,
-            PRIMARY KEY  (id)
+            PRIMARY KEY  (id),
+            KEY region_name (region_name),
+            KEY test_time (test_time)
         ) $charset_collate;";
 
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
@@ -54,7 +56,7 @@ class Wp_Hosting_Benchmarking_DB {
 
         return $wpdb->get_results($query, ARRAY_A);
     }
-    
+
 
     public function delete_all_results() {
         global $wpdb;

@@ -195,7 +195,13 @@ class Wp_Hosting_Benchmarking {
             delete_option('wp_hosting_benchmarking_start_time');
         }
     }
-
+	public function check_version() {
+        if (get_option('wp_hosting_benchmarking_version') != WP_HOSTING_BENCHMARKING_VERSION) {
+            $db = new Wp_Hosting_Benchmarking_DB();
+            $db->create_table(); // This will update the table if the structure has changed
+            update_option('wp_hosting_benchmarking_version', WP_HOSTING_BENCHMARKING_VERSION);
+        }
+    }
 	/**
 	 * Run the loader to execute all of the hooks with WordPress.
 	 *
@@ -203,6 +209,7 @@ class Wp_Hosting_Benchmarking {
 	 */
 	public function run() {
 		$this->loader->run();
+		$this->check_version();
 	}
 
 	/**

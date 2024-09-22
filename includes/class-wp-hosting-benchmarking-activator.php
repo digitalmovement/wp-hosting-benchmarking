@@ -31,6 +31,8 @@ class Wp_Hosting_Benchmarking_Activator {
 	 */
 	public static function activate() {
 
+		add_option('wp_hosting_benchmarking_version', WP_HOSTING_BENCHMARKING_VERSION);
+
 	}
 
 }

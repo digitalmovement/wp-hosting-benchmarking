@@ -44,6 +44,11 @@ define( 'WP_HOSTING_BENCHMARKING_VERSION', '1.0.1' );
 function activate_wp_hosting_benchmarking() {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-wp-hosting-benchmarking-activator.php';
 	Wp_Hosting_Benchmarking_Activator::activate();
+
+	   // Create the database table
+	require_once plugin_dir_path( __FILE__ ) . 'includes/class-wp-hosting-benchmarking-db.php';
+	$db = new Wp_Hosting_Benchmarking_DB();
+	$db->create_table();
 }
 
 /**
