@@ -154,6 +154,9 @@ class Wp_Hosting_Benchmarking_Admin {
         check_ajax_referer('wp_hosting_benchmarking_nonce', 'nonce');
         $results = $this->db->get_latest_results();
         wp_send_json_success($results);
+
+		$results = $this->db->get_latest_results_by_region();
+        wp_send_json_success($results);
     }
 
     public function delete_all_results() {

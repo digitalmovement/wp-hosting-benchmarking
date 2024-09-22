@@ -37,6 +37,25 @@ class Wp_Hosting_Benchmarking_DB {
         return $wpdb->get_results("SELECT * FROM $table_name ORDER BY test_time DESC LIMIT 10");
     }
 
+    public function get_latest_results_by_region() {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'hosting_benchmarking_results';
+        
+        $query = "
+            SELECT r1.*
+            FROM $table_name r1
+            INNER JOIN (
+                SELECT region_name, MAX(test_time) as max_time
+                FROM $table_name
+                GROUP BY region_name
+            ) r2 ON r1.region_name = r2.region_name AND r1.test_time = r2.max_time
+            ORDER BY r1.region_name
+        ";
+
+        return $wpdb->get_results($query, ARRAY_A);
+    }
+    
+
     public function delete_all_results() {
         global $wpdb;
         $table_name = $wpdb->prefix . 'hosting_benchmarking_results';

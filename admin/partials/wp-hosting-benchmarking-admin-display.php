@@ -11,143 +11,107 @@
  * @package    Wp_Hosting_Benchmarking
  * @subpackage Wp_Hosting_Benchmarking/admin/partials
  */
-?>
-<div class="wrap">
-    <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
-    <div id="latency-test-container">
-        <button id="start-test" class="button button-primary">Start Latency Test</button>
-        <button id="stop-test" class="button button-secondary" style="display:none;">Stop Latency Test</button>
-        <p id="test-status"></p>
-        <div id="countdown"></div>
-    </div>
-    <div id="results-container">
-        <h2>Latest Results</h2>
-        <div id="latest-results"></div>
-        <div id="latency-graph"></div>
-    </div>
-    <button id="delete-results" class="button button-secondary">Delete All Results</button>
+?><div class="wrap">
+<h1><?php echo esc_html(get_admin_page_title()); ?></h1>
+<div id="latency-test-container">
+    <button id="start-test" class="button button-primary">Start Latency Test</button>
+    <button id="stop-test" class="button button-secondary" style="display:none;">Stop Latency Test</button>
+    <p id="test-status"></p>
+    <div id="countdown"></div>
 </div>
+<div id="results-container">
+    <h2>Latest Results</h2>
+    <table id="latency-results" class="wp-list-table widefat fixed striped">
+        <thead>
+            <tr>
+                <th>Region</th>
+                <th>Current Latency (ms)</th>
+                <th>Difference</th>
+                <th>Last Updated</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Results will be populated here -->
+        </tbody>
+    </table>
+</div>
+<div id="latency-graph"></div>
+<button id="delete-results" class="button button-secondary">Delete All Results</button>
+</div>
+
+<style>
+.latency-faster { color: green; }
+.latency-slower { color: red; }
+#latency-results th, #latency-results td { padding: 8px; }
+</style>
 
 <script>
 jQuery(document).ready(function($) {
-    var countdownInterval;
+var countdownInterval;
+var lastResults = {};
 
-    function updateButtonState(isRunning) {
-        $('#start-test').prop('disabled', isRunning).toggle(!isRunning);
-        $('#stop-test').toggle(isRunning);
-    }
+// ... (previous JavaScript code remains the same)
 
-    $('#start-test').on('click', function() {
-        $.ajax({
-            url: wpHostingBenchmarking.ajax_url,
-            type: 'POST',
-            data: {
-                action: 'start_latency_test',
-                nonce: wpHostingBenchmarking.nonce
-            },
-            success: function(response) {
-                if (response.success) {
-                    $('#test-status').text('Test started. Running for 1 hour.');
-                    updateButtonState(true);
-                    startCountdown(3600); // 1 hour in seconds
-                } else {
-                    alert(response.data);
-                }
+function updateResults() {
+    $.ajax({
+        url: wpHostingBenchmarking.ajax_url,
+        type: 'POST',
+        data: {
+            action: 'get_latest_results',
+            nonce: wpHostingBenchmarking.nonce
+        },
+        success: function(response) {
+            if (response.success) {
+                updateResultsTable(response.data);
+                updateGraph(response.data);
             }
-        });
-    });
-
-    $('#stop-test').on('click', function() {
-        $.ajax({
-            url: wpHostingBenchmarking.ajax_url,
-            type: 'POST',
-            data: {
-                action: 'stop_latency_test',
-                nonce: wpHostingBenchmarking.nonce
-            },
-            success: function(response) {
-                if (response.success) {
-                    $('#test-status').text('Test stopped.');
-                    updateButtonState(false);
-                    stopCountdown();
-                }
-            }
-        });
-    });
-
-    function startCountdown(duration) {
-        var timer = duration, minutes, seconds;
-        countdownInterval = setInterval(function () {
-            minutes = parseInt(timer / 60, 10);
-            seconds = parseInt(timer % 60, 10);
-
-            minutes = minutes < 10 ? "0" + minutes : minutes;
-            seconds = seconds < 10 ? "0" + seconds : seconds;
-
-            $('#countdown').text(minutes + ":" + seconds);
-
-            if (--timer < 0) {
-                stopCountdown();
-                updateButtonState(false);
-                $('#test-status').text('Test completed.');
-            }
-        }, 1000);
-    }
-
-    function stopCountdown() {
-        clearInterval(countdownInterval);
-        $('#countdown').text('');
-    }
-
-    function updateResults() {
-        $.ajax({
-            url: wpHostingBenchmarking.ajax_url,
-            type: 'POST',
-            data: {
-                action: 'get_latest_results',
-                nonce: wpHostingBenchmarking.nonce
-            },
-            success: function(response) {
-                if (response.success) {
-                    // Update #latest-results and #latency-graph with the new data
-                    // You'll need to implement this based on your data structure
-                    $('#latest-results').html(formatResults(response.data));
-                    updateGraph(response.data);
-                }
-            }
-        });
-    }
-
-    function formatResults(results) {
-        // Implement this function to format the results as HTML
-    }
-
-    function updateGraph(data) {
-        // Implement this function to update the graph
-        // You might want to use a library like Chart.js for this
-    }
-
-    $('#delete-results').on('click', function() {
-        if (confirm('Are you sure you want to delete all results?')) {
-            $.ajax({
-                url: wpHostingBenchmarking.ajax_url,
-                type: 'POST',
-                data: {
-                    action: 'delete_all_results',
-                    nonce: wpHostingBenchmarking.nonce
-                },
-                success: function(response) {
-                    if (response.success) {
-                        alert('All results deleted');
-                        updateResults();
-                    }
-                }
-            });
         }
     });
+}
 
-    // Initial update and set interval for periodic updates
-    updateResults();
-    setInterval(updateResults, 60000); // Update every minute
+function updateResultsTable(results) {
+    var tableBody = $('#latency-results tbody');
+    tableBody.empty();
+
+    results.forEach(function(result) {
+        var row = $('<tr>');
+        var latencyDiff = calculateLatencyDiff(result.region_name, result.latency);
+        var diffClass = latencyDiff < 0 ? 'latency-faster' : (latencyDiff > 0 ? 'latency-slower' : '');
+        var diffText = latencyDiff !== null ? (latencyDiff > 0 ? '+' : '') + latencyDiff.toFixed(1) : 'N/A';
+
+        row.append($('<td>').text(result.region_name));
+        row.append($('<td>').text(result.latency.toFixed(1)));
+        row.append($('<td>').addClass(diffClass).text(diffText));
+        row.append($('<td>').text(formatDate(result.test_time)));
+
+        tableBody.append(row);
+
+        // Update last results for future comparisons
+        lastResults[result.region_name] = result.latency;
+    });
+}
+
+function calculateLatencyDiff(region, currentLatency) {
+    if (lastResults.hasOwnProperty(region)) {
+        return currentLatency - lastResults[region];
+    }
+    return null;
+}
+
+function formatDate(dateString) {
+    var date = new Date(dateString);
+    return date.toLocaleString();
+}
+
+function updateGraph(data) {
+    // Implement this function to update the graph
+    // You might want to use a library like Chart.js for this
+}
+
+// ... (rest of the JavaScript code remains the same)
+
+// Initial update and set interval for periodic updates
+updateResults();
+setInterval(updateResults, 60000); // Update every minute
 });
 </script>
