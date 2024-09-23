@@ -7,11 +7,11 @@ class Wp_Hosting_Benchmarking_DB {
         $table_name = $wpdb->prefix . 'hosting_benchmarking_results';
 
         $sql = "CREATE TABLE $table_name (
-        latency_difference float DEFAULT NULL,
             id mediumint(9) NOT NULL AUTO_INCREMENT,
             test_time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
             region_name varchar(255) NOT NULL,
             latency float NOT NULL,
+            latency_difference float DEFAULT NULL,
             PRIMARY KEY  (id),
             KEY region_name (region_name),
             KEY test_time (test_time)
@@ -24,20 +24,32 @@ class Wp_Hosting_Benchmarking_DB {
     public function insert_result($region_name, $latency) {
         global $wpdb;
         $table_name = $wpdb->prefix . 'hosting_benchmarking_results';
+
+        // Fetch the latest result for the same region
+        $latest_result = $wpdb->get_row($wpdb->prepare(
+            "SELECT latency FROM $table_name WHERE region_name = %s ORDER BY test_time DESC LIMIT 1",
+            $region_name
+        ));
+
+        // Calculate the latency difference
+        $latency_difference = $latest_result ? ($latency - $latest_result->latency) : null;
+
+        // Insert the new result with latency difference
         $wpdb->insert(
             $table_name,
             array(
                 'test_time' => current_time('mysql'),
                 'region_name' => $region_name,
-                'latency' => $latency
+                'latency' => $latency,
+                'latency_difference' => $latency_difference
             )
         );
     }
 
-    public function get_latest_results() {
+      public function get_latest_results() {
         global $wpdb;
         $table_name = $wpdb->prefix . 'hosting_benchmarking_results';
-        return $wpdb->get_results("SELECT * FROM $table_name ORDER BY test_time DESC LIMIT 10");
+        return $wpdb->get_results("SELECT * FROM $table_name ORDER BY test_time DESC LIMIT 10", ARRAY_A);
     }
 
     public function get_latest_results_by_region() {
@@ -57,7 +69,6 @@ class Wp_Hosting_Benchmarking_DB {
 
         return $wpdb->get_results($query);
     }
-
 
     public function delete_all_results() {
         global $wpdb;
