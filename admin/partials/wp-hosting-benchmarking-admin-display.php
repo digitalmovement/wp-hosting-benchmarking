@@ -218,22 +218,28 @@ function updateResultsTable(results) {
 
     results.forEach(function(result) {
         var row = $('<tr>');
-        
-        // Convert latency to a number if it's not already
+
+        // Convert latency to a number
         var latency = parseFloat(result.latency);
-        
+        var latencyDifference = parseFloat(result.latency_difference);
+
         // Check if latency is a valid number
         if (isNaN(latency)) {
-            console.error('Invalid latency value:', print_r(result.latency,true));
-            latency = 0; // or some default value
+            console.error('Invalid latency value:', result.latency);
+            latency = 0; // Default value if invalid
         }
 
-        var latencyDiff = calculateLatencyDiff(result.region_name, latency);
-        var diffClass = latencyDiff < 0 ? 'latency-faster' : (latencyDiff > 0 ? 'latency-slower' : '');
-        var diffText = latencyDiff !== null ? (latencyDiff > 0 ? '+' : '') + latencyDiff.toFixed(1) : 'N/A';
+        // Check if latency difference is valid
+        var diffText = 'N/A';
+        var diffClass = '';
+        if (!isNaN(latencyDifference)) {
+            diffText = latencyDifference > 0 ? '+' + latencyDifference.toFixed(1) : latencyDifference.toFixed(1);
+            diffClass = latencyDifference < 0 ? 'latency-faster' : (latencyDifference > 0 ? 'latency-slower' : '');
+        }
 
+        // Create the table row
         row.append($('<td>').text(result.region_name));
-        row.append($('<td>').text(latency.toFixed(1)));
+        row.append($('<td>').text(latency.toFixed(1) + ' ms'));
         row.append($('<td>').addClass(diffClass).text(diffText));
         row.append($('<td>').text(formatDate(result.test_time)));
 
