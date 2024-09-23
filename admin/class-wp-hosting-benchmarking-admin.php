@@ -144,7 +144,7 @@ class Wp_Hosting_Benchmarking_Admin {
         wp_clear_scheduled_hook('wp_hosting_benchmarking_cron_hook');
         delete_option('wp_hosting_benchmarking_start_time');
         wp_send_json_success('Test reset successfully');
-    }
+    
         check_ajax_referer('wp_hosting_benchmarking_nonce', 'nonce');
 
         if (!wp_next_scheduled('wp_hosting_benchmarking_cron_hook')) {
