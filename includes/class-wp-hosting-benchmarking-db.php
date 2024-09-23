@@ -54,7 +54,7 @@ class Wp_Hosting_Benchmarking_DB {
             ORDER BY r1.region_name
         ";
 
-        return $wpdb->get_results($query, ARRAY_A);
+        return $wpdb->get_results($query);
     }
 
 
