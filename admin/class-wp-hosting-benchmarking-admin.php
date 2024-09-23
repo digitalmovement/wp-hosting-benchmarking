@@ -151,7 +151,9 @@ class Wp_Hosting_Benchmarking_Admin {
             return;
         }
 
-        $results = $this->db->get_latest_results();
+        //$results = $this->db->get_latest_results();
+		$results = $this->db->get_latest_results_by_region();
+		
 		$results = array_map(function($result) {
 			$result->latency = (float) $result->latency;
 			return $result;
@@ -160,8 +162,7 @@ class Wp_Hosting_Benchmarking_Admin {
 		
         wp_send_json_success($results);
 
-		//$results = $this->db->get_latest_results_by_region();
-        //wp_send_json_success($results);
+
     }
 
     public function delete_all_results() {
