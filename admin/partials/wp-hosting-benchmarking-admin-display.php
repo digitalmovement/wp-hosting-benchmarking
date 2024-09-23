@@ -51,6 +51,67 @@ var countdownInterval;
 var lastResults = {};
 
 function updateButtonState(isRunning) {
+    $('#start-test').prop('disabled', isRunning);
+    $('#start-test').toggle(!isRunning);
+    $('#stop-test').toggle(isRunning);
+}
+
+function startCountdown(duration, startTime) {
+    var timer = duration - (Math.floor(Date.now() / 1000) - startTime), minutes, seconds;
+    countdownInterval = setInterval(function () {
+        if (timer <= 0) {
+            clearInterval(countdownInterval);
+            $('#test-status').text('Test completed.');
+            updateButtonState(false);
+            return;
+        }
+
+        minutes = parseInt(timer / 60, 10);
+        seconds = parseInt(timer % 60, 10);
+
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        $('#countdown').text(minutes + ":" + seconds);
+        timer--;
+    }, 1000);
+}
+
+function checkTestStatus() {
+    var startTime = parseInt(wpHostingBenchmarking.start_time, 10);
+    if (startTime) {
+        var currentTime = Math.floor(Date.now() / 1000);
+        var elapsedTime = currentTime - startTime;
+        if (elapsedTime < 3600) {
+            $('#test-status').text('Test running...');
+            updateButtonState(true);
+            startCountdown(3600, startTime);
+        }
+    }
+}
+
+$('#reset-test').on('click', function() {
+    $.ajax({
+        url: wpHostingBenchmarking.ajax_url,
+        type: 'POST',
+        data: {
+            action: 'reset_latency_test',
+            nonce: wpHostingBenchmarking.nonce
+        },
+        success: function(response) {
+            if (response.success) {
+                $('#test-status').text('Test reset successfully.');
+                updateButtonState(false);
+                clearInterval(countdownInterval);
+                $('#countdown').text('');
+            } else {
+                alert(response.data);
+            }
+        }
+    });
+});
+
+checkTestStatus();
         $('#start-test').prop('disabled', isRunning).toggle(!isRunning);
         $('#stop-test').toggle(isRunning);
     }

@@ -116,6 +116,38 @@ class Wp_Hosting_Benchmarking_Admin {
         check_ajax_referer('wp_hosting_benchmarking_nonce', 'nonce');
 
         if (!wp_next_scheduled('wp_hosting_benchmarking_cron_hook')) {
+            $start_time = time();
+            update_option('wp_hosting_benchmarking_start_time', $start_time);
+            wp_schedule_event($start_time, 'five_minutes', 'wp_hosting_benchmarking_cron_hook');
+
+            // Run the first test immediately
+            $endpoints = $this->api->get_gcp_endpoints();
+            foreach ($endpoints as $endpoint) {
+                $latency = $this->api->ping_endpoint($endpoint['url']);
+                if ($latency !== false) {
+                    $this->db->insert_result($endpoint['region_name'], $latency);
+                }
+            }
+
+            wp_send_json_success(array(
+                'message' => 'Test started successfully',
+                'start_time' => $start_time
+            ));
+        } else {
+            wp_send_json_error('Test is already running');
+        }
+    }
+    
+    public function reset_latency_test() {
+        check_ajax_referer('wp_hosting_benchmarking_nonce', 'nonce');
+
+        wp_clear_scheduled_hook('wp_hosting_benchmarking_cron_hook');
+        delete_option('wp_hosting_benchmarking_start_time');
+        wp_send_json_success('Test reset successfully');
+    }
+        check_ajax_referer('wp_hosting_benchmarking_nonce', 'nonce');
+
+        if (!wp_next_scheduled('wp_hosting_benchmarking_cron_hook')) {
             wp_schedule_event(time(), 'five_minutes', 'wp_hosting_benchmarking_cron_hook');
             update_option('wp_hosting_benchmarking_start_time', time());
             

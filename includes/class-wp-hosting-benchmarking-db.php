@@ -7,6 +7,7 @@ class Wp_Hosting_Benchmarking_DB {
         $table_name = $wpdb->prefix . 'hosting_benchmarking_results';
 
         $sql = "CREATE TABLE $table_name (
+        latency_difference float DEFAULT NULL,
             id mediumint(9) NOT NULL AUTO_INCREMENT,
             test_time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
             region_name varchar(255) NOT NULL,
