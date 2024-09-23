@@ -7,3 +7,4 @@
 .latency-slower { color: darkred!important; }   /* For positive differences (worsened latency) */
 #latency-results th, #latency-results td { padding: 8px; }
 
+ 
