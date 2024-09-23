@@ -151,7 +151,7 @@ function updateResultsTable(results) {
         
         // Check if latency is a valid number
         if (isNaN(latency)) {
-            console.error('Invalid latency value:', result.latency);
+            console.error('Invalid latency value:', print_r(result.latency,true));
             latency = 0; // or some default value
         }
 
