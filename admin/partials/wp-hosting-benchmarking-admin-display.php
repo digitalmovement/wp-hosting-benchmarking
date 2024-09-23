@@ -47,48 +47,52 @@
 
 <script>
 jQuery(document).ready(function($) {
-var countdownInterval;
-var lastResults = {};
+    var countdownInterval;
+    var isRunning = false; // Initialize isRunning as false
+    var lastResults = {};
 
-function updateButtonState(isRunning) {
-    $('#start-test').prop('disabled', isRunning);
-    $('#start-test').toggle(!isRunning);
-    $('#stop-test').toggle(isRunning);
-}
+    function updateButtonState(isRunning) {
+        $('#start-test').prop('disabled', isRunning); // Disable start button if running
+        $('#start-test').toggle(!isRunning);
+        $('#stop-test').toggle(isRunning);
+    }
 
-function startCountdown(duration, startTime) {
-    var timer = duration - (Math.floor(Date.now() / 1000) - startTime), minutes, seconds;
-    countdownInterval = setInterval(function () {
-        if (timer <= 0) {
-            clearInterval(countdownInterval);
-            $('#test-status').text('Test completed.');
-            updateButtonState(false);
-            return;
-        }
+    function startCountdown(duration, startTime) {
+        var timer = duration - (Math.floor(Date.now() / 1000) - startTime), minutes, seconds;
+        countdownInterval = setInterval(function () {
+            if (timer <= 0) {
+                clearInterval(countdownInterval);
+                $('#test-status').text('Test completed.');
+                isRunning = false; // Update running status
+                updateButtonState(false); // Re-enable the start button
+                return;
+            }
 
-        minutes = parseInt(timer / 60, 10);
-        seconds = parseInt(timer % 60, 10);
+            minutes = parseInt(timer / 60, 10);
+            seconds = parseInt(timer % 60, 10);
 
-        minutes = minutes < 10 ? "0" + minutes : minutes;
-        seconds = seconds < 10 ? "0" + seconds : seconds;
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
 
-        $('#countdown').text(minutes + ":" + seconds);
-        timer--;
-    }, 1000);
-}
+            $('#countdown').text(minutes + ":" + seconds);
+            timer--;
+        }, 1000);
+    }
 
-function checkTestStatus() {
-    var startTime = parseInt(wpHostingBenchmarking.start_time, 10);
-    if (startTime) {
-        var currentTime = Math.floor(Date.now() / 1000);
-        var elapsedTime = currentTime - startTime;
-        if (elapsedTime < 3600) {
-            $('#test-status').text('Test running...');
-            updateButtonState(true);
-            startCountdown(3600, startTime);
+    function checkTestStatus() {
+        var startTime = parseInt(wpHostingBenchmarking.start_time, 10);
+        if (startTime) {
+            var currentTime = Math.floor(Date.now() / 1000);
+            var elapsedTime = currentTime - startTime;
+            if (elapsedTime < 3600) {
+                $('#test-status').text('Test running...');
+                isRunning = true; // Update running status
+                updateButtonState(true); // Disable start button while running
+                startCountdown(3600, startTime);
+            }
         }
     }
-}
+
 
 $('#reset-test').on('click', function() {
     $.ajax({
@@ -111,12 +115,15 @@ $('#reset-test').on('click', function() {
     });
 });
 
-checkTestStatus();
+
         $('#start-test').prop('disabled', isRunning).toggle(!isRunning);
         $('#stop-test').toggle(isRunning);
     
 
-    $('#start-test').on('click', function() {
+     $('#start-test').on('click', function() {
+        isRunning = true; // Set running status
+        updateButtonState(true); // Disable start button
+
         $.ajax({
             url: wpHostingBenchmarking.ajax_url,
             type: 'POST',
@@ -127,15 +134,17 @@ checkTestStatus();
             success: function(response) {
                 if (response.success) {
                     $('#test-status').text('Test started. Running for 1 hour.');
-                    updateButtonState(true);
-                    startCountdown(3600); // 1 hour in seconds
+                    startCountdown(3600, Math.floor(Date.now() / 1000));
                 } else {
                     alert(response.data);
+                    isRunning = false; // Reset running status if there's an error
+                    updateButtonState(false); // Re-enable start button
                 }
             }
         });
     });
 
+    // Stop test button click handler
     $('#stop-test').on('click', function() {
         $.ajax({
             url: wpHostingBenchmarking.ajax_url,
@@ -147,12 +156,15 @@ checkTestStatus();
             success: function(response) {
                 if (response.success) {
                     $('#test-status').text('Test stopped.');
-                    updateButtonState(false);
-                    stopCountdown();
+                    clearInterval(countdownInterval); // Stop the countdown
+                    isRunning = false; // Update running status
+                    updateButtonState(false); // Re-enable start button
+                    $('#countdown').text('');
                 }
             }
         });
     });
+
 
     function startCountdown(duration) {
         var timer = duration, minutes, seconds;
@@ -251,7 +263,9 @@ function updateGraph(data) {
 // ... (rest of the JavaScript code remains the same)
 
 // Initial update and set interval for periodic updates
+checkTestStatus();
 updateResults();
 setInterval(updateResults, 60000); // Update every minute
+
 });
 </script>
