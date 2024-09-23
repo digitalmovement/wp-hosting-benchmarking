@@ -1,6 +1,7 @@
 <?php 
 
 class Wp_Hosting_Benchmarking_API {
+
     public function get_gcp_endpoints() {
         $response = wp_remote_get('https://global.gcping.com/api/endpoints');
         if (is_wp_error($response)) {
