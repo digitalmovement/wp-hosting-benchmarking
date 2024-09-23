@@ -32,8 +32,9 @@ class Wp_Hosting_Benchmarking_Admin {
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
 		$this->init_components();
-        $this->enqueue_scripts();
-        $this->enqueue_styles();
+      // Hook into 'admin_enqueue_scripts' to enqueue scripts/styles
+      add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
+      add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
    
 	}
 
@@ -47,22 +48,24 @@ class Wp_Hosting_Benchmarking_Admin {
 	 *
 	 * @since    1.0.0
 	 */
-	public function enqueue_styles() {
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/wp-hosting-benchmarking-admin.css', array(), $this->version, 'all' );
-	}
+    public function enqueue_styles() {
+        wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/wp-hosting-benchmarking-admin.css', array(), $this->version, 'all' );
+    }
 
 	/**
 	 * Register the JavaScript for the admin area.
 	 *
 	 * @since    1.0.0
 	 */
-	public function enqueue_scripts() {
-		 wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/wp-hosting-benchmarking-admin.js', array('jquery'), $this->version, false);
-		 wp_localize_script($this->plugin_name, 'wpHostingBenchmarking', array(
-			 'ajax_url' => admin_url('admin-ajax.php'),
-			 'nonce' => wp_create_nonce('wp_hosting_benchmarking_nonce')
-		 ));
-	}
+    public function enqueue_scripts() {
+        wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/wp-hosting-benchmarking-admin.js', array('jquery'), $this->version, false);
+
+        // Localize script after enqueuing
+        wp_localize_script($this->plugin_name, 'wpHostingBenchmarking', array(
+            'ajax_url' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('wp_hosting_benchmarking_nonce') // Create nonce properly within this hook
+        ));
+    }
   /**
      * Add admin menu item for WP Benchmarking
      */
