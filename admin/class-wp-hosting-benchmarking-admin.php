@@ -33,9 +33,12 @@ class Wp_Hosting_Benchmarking_Admin {
 		$this->version = $version;
 		$this->db = $db;
         $this->api = $api;
-
+		$this->init_components();
 	}
-
+    private function init_components() {
+        $this->db = new Wp_Hosting_Benchmarking_DB();
+        $this->api = new Wp_Hosting_Benchmarking_API();
+    }
 	/**
 	 * Register the stylesheets for the admin area.
 	 *
@@ -142,6 +145,11 @@ class Wp_Hosting_Benchmarking_Admin {
 
     public function get_latest_results() {
         check_ajax_referer('wp_hosting_benchmarking_nonce', 'nonce');
+		if (!$this->db) {
+            wp_send_json_error('Database object not initialized');
+            return;
+        }
+
         $results = $this->db->get_latest_results();
         wp_send_json_success($results);
 
