@@ -153,7 +153,7 @@ class Wp_Hosting_Benchmarking_Admin {
 
         $results = $this->db->get_latest_results();
 		$results = array_map(function($result) {
-			$result['latency'] = (float) $result['latency'];
+			$result->latency = (float) $result->latency;
 			return $result;
 		}, $results);
 
