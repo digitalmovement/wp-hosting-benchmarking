@@ -32,6 +32,8 @@ class Wp_Hosting_Benchmarking_Admin {
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
 		$this->init_components();
+        $this->enqueue_scripts();
+        $this->enqueue_styles();
    
 	}
 
@@ -46,21 +48,7 @@ class Wp_Hosting_Benchmarking_Admin {
 	 * @since    1.0.0
 	 */
 	public function enqueue_styles() {
-
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Wp_Hosting_Benchmarking_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Wp_Hosting_Benchmarking_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
-
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/wp-hosting-benchmarking-admin.css', array(), $this->version, 'all' );
-
 	}
 
 	/**
@@ -69,25 +57,11 @@ class Wp_Hosting_Benchmarking_Admin {
 	 * @since    1.0.0
 	 */
 	public function enqueue_scripts() {
-
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Wp_Hosting_Benchmarking_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Wp_Hosting_Benchmarking_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
-
 		 wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/wp-hosting-benchmarking-admin.js', array('jquery'), $this->version, false);
 		 wp_localize_script($this->plugin_name, 'wpHostingBenchmarking', array(
 			 'ajax_url' => admin_url('admin-ajax.php'),
 			 'nonce' => wp_create_nonce('wp_hosting_benchmarking_nonce')
 		 ));
- 
 	}
   /**
      * Add admin menu item for WP Benchmarking
