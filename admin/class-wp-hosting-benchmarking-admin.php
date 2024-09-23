@@ -31,15 +31,16 @@ class Wp_Hosting_Benchmarking_Admin {
 
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
-		$this->db = $db;
-        $this->api = $api;
 		$this->init_components();
+   
 	}
-    private function init_components() {
+
+	private function init_components() {
         $this->db = new Wp_Hosting_Benchmarking_DB();
         $this->api = new Wp_Hosting_Benchmarking_API();
     }
-	/**
+
+   /**
 	 * Register the stylesheets for the admin area.
 	 *
 	 * @since    1.0.0
