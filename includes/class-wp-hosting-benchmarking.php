@@ -157,11 +157,11 @@ class Wp_Hosting_Benchmarking {
 
     public function execute_latency_test() {
     
-        $endpoints = $this->$api->get_gcp_endpoints();
+        $endpoints = $this->api->get_gcp_endpoints();
 		error_log("GCP ENDPOINTS RAN");
 		error_log(print_r($endpoints,true));
 		foreach ($endpoints as $endpoint) {
-			$latency = $this->$api->ping_endpoint($endpoint['url']);
+			$latency = $this->api->ping_endpoint($endpoint['url']);
 			if ($latency !== false) {
 				// Store the result in the database
 				$this->db->insert_result($endpoint['region_name'], $latency);
