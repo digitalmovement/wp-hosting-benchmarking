@@ -38,13 +38,6 @@
 <div id="latency-graph"></div>
 <button id="delete-results" class="button button-secondary">Delete All Results</button>
 </div>
-
-<style>
-.latency-faster { color: green; }
-.latency-slower { color: red; }
-#latency-results th, #latency-results td { padding: 8px; }
-</style>
-
 <script>
 jQuery(document).ready(function($) {
     var countdownInterval;

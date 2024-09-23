@@ -3,6 +3,7 @@
  * included in this file.
  */
 
-.latency-faster { color: darkgreen; } /* For negative differences (improved latency) */
-.latency-slower { color: darkred; }   /* For positive differences (worsened latency) */
+.latency-faster { color: darkgreen!important; } /* For negative differences (improved latency) */
+.latency-slower { color: darkred!important; }   /* For positive differences (worsened latency) */
+#latency-results th, #latency-results td { padding: 8px; }
 
