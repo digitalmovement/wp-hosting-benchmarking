@@ -114,7 +114,7 @@ $('#reset-test').on('click', function() {
 checkTestStatus();
         $('#start-test').prop('disabled', isRunning).toggle(!isRunning);
         $('#stop-test').toggle(isRunning);
-    }
+    
 
     $('#start-test').on('click', function() {
         $.ajax({
