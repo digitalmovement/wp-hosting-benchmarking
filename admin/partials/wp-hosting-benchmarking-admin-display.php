@@ -117,8 +117,7 @@ function updateButtonState(isRunning) {
         $('#countdown').text('');
     }
 
-
-function updateResults() {
+    function updateResults() {
     $.ajax({
         url: wpHostingBenchmarking.ajax_url,
         type: 'POST',
@@ -127,36 +126,50 @@ function updateResults() {
             nonce: wpHostingBenchmarking.nonce
         },
         success: function(response) {
+            console.log('Server response:', response); // Add this line
             if (response.success) {
                 updateResultsTable(response.data);
                 updateGraph(response.data);
+            } else {
+                console.error('Error in server response:', response);
             }
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.error('AJAX request failed:', textStatus, errorThrown);
         }
     });
 }
-
 function updateResultsTable(results) {
     var tableBody = $('#latency-results tbody');
     tableBody.empty();
 
     results.forEach(function(result) {
         var row = $('<tr>');
-        var latencyDiff = calculateLatencyDiff(result.region_name, result.latency);
+        
+        // Convert latency to a number if it's not already
+        var latency = parseFloat(result.latency);
+        
+        // Check if latency is a valid number
+        if (isNaN(latency)) {
+            console.error('Invalid latency value:', result.latency);
+            latency = 0; // or some default value
+        }
+
+        var latencyDiff = calculateLatencyDiff(result.region_name, latency);
         var diffClass = latencyDiff < 0 ? 'latency-faster' : (latencyDiff > 0 ? 'latency-slower' : '');
         var diffText = latencyDiff !== null ? (latencyDiff > 0 ? '+' : '') + latencyDiff.toFixed(1) : 'N/A';
 
         row.append($('<td>').text(result.region_name));
-        row.append($('<td>').text(result.latency.toFixed(1)));
+        row.append($('<td>').text(latency.toFixed(1)));
         row.append($('<td>').addClass(diffClass).text(diffText));
         row.append($('<td>').text(formatDate(result.test_time)));
 
         tableBody.append(row);
 
         // Update last results for future comparisons
-        lastResults[result.region_name] = result.latency;
+        lastResults[result.region_name] = latency;
     });
 }
-
 function calculateLatencyDiff(region, currentLatency) {
     if (lastResults.hasOwnProperty(region)) {
         return currentLatency - lastResults[region];
