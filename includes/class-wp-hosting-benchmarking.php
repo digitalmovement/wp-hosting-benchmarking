@@ -124,7 +124,7 @@ class Wp_Hosting_Benchmarking {
         $this->loader->add_action('wp_ajax_get_latest_results', $plugin_admin, 'get_latest_results');
         $this->loader->add_action('wp_ajax_delete_all_results', $plugin_admin, 'delete_all_results');
 		$this->loader->add_action('wp_ajax_get_results_for_time_range', $plugin_admin, 'get_results_for_time_range');
-
+		
 		//	$this->loader->add_action('wp_ajax_get_results_for_time_range', array($this, 'get_results_for_time_range'));
   		
 	}
@@ -161,8 +161,6 @@ class Wp_Hosting_Benchmarking {
     public function execute_latency_test() {
     
         $endpoints = $this->api->get_gcp_endpoints();
-		error_log("GCP ENDPOINTS RAN");
-		error_log(print_r($endpoints,true));
 		foreach ($endpoints as $endpoint) {
 			$latency = $this->api->ping_endpoint($endpoint['url']);
 			if ($latency !== false) {
