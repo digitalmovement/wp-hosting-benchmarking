@@ -35,6 +35,7 @@ class Wp_Hosting_Benchmarking_Admin {
       // Hook into 'admin_enqueue_scripts' to enqueue scripts/styles
       add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
       add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
+      add_action('admin_init', array($this, 'register_settings'));
    
 	}
 
@@ -79,6 +80,16 @@ class Wp_Hosting_Benchmarking_Admin {
             'dashicons-performance',
             999 // Set a high number to ensure it's the last menu item
         );
+
+        // Add a submenu for Settings
+        add_submenu_page(
+            'wp-hosting-benchmarking',    // Parent slug
+            'Settings',                   // Page title
+            'Settings',                   // Menu title
+            'manage_options',             // Capability
+            'wp-hosting-benchmarking-settings',  // Menu slug
+            array($this, 'display_settings_page')  // Callback function
+        );
     }
 
     /**
@@ -88,6 +99,12 @@ class Wp_Hosting_Benchmarking_Admin {
 	public function display_plugin_admin_page() {
         include_once 'partials/wp-hosting-benchmarking-admin-display.php';
     }
+
+    public function display_settings_page() {
+        include_once 'partials/wp-hosting-benchmarking-settings-display.php';
+    }
+
+    
 
 	public function start_latency_test() {
         check_ajax_referer('wp_hosting_benchmarking_nonce', 'nonce');
@@ -193,5 +210,41 @@ class Wp_Hosting_Benchmarking_Admin {
         $this->db->delete_all_results();
         wp_send_json_success('All results deleted');
     }
+
+    /**
+     * Register plugin settings.
+     */
+    public function register_settings() {
+        // Register a new setting for "wp_hosting_benchmarking_settings"
+        register_setting('wp_hosting_benchmarking_settings', 'wp_hosting_benchmarking_option');
+
+        // Add a new section in the "Settings" page
+        add_settings_section(
+            'wp_hosting_benchmarking_section',
+            'General Settings',
+            null,
+            'wp-hosting-benchmarking-settings'
+        );
+
+        // Add a new field to the "General Settings" section
+        add_settings_field(
+            'wp_hosting_benchmarking_field', 
+            'Sample Setting', 
+            array($this, 'render_sample_setting_field'), 
+            'wp-hosting-benchmarking-settings', 
+            'wp_hosting_benchmarking_section'
+        );
+    }
+
+    /**
+     * Render the field for the sample setting.
+     */
+    public function render_sample_setting_field() {
+        $option = get_option('wp_hosting_benchmarking_option');
+        ?>
+        <input type="text" name="wp_hosting_benchmarking_option" value="<?php echo esc_attr($option); ?>">
+        <?php
+    }
+
 
 }
