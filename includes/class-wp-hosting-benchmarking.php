@@ -123,7 +123,10 @@ class Wp_Hosting_Benchmarking {
         $this->loader->add_action('wp_ajax_stop_latency_test', $plugin_admin, 'stop_latency_test');
         $this->loader->add_action('wp_ajax_get_latest_results', $plugin_admin, 'get_latest_results');
         $this->loader->add_action('wp_ajax_delete_all_results', $plugin_admin, 'delete_all_results');
-		
+		$this->loader->add_action('wp_ajax_get_results_for_time_range', $plugin_admin, 'get_results_for_time_range'));
+
+		//	$this->loader->add_action('wp_ajax_get_results_for_time_range', array($this, 'get_results_for_time_range'));
+  		
 	}
 
 	/**

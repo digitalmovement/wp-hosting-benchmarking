@@ -36,8 +36,7 @@ class Wp_Hosting_Benchmarking_Admin {
       add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
       add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
       add_action('admin_init', array($this, 'register_settings'));
-   
-	}
+     }
 
 	private function init_components() {
         $this->db = new Wp_Hosting_Benchmarking_DB();
