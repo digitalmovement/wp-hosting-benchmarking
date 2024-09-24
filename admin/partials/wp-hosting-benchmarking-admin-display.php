@@ -133,6 +133,30 @@ jQuery(document).ready(function($) {
         });
     }
 
+    $('#time-range').on('change', function() {
+        var timeRange = $(this).val();
+
+        $.ajax({
+            url: wpHostingBenchmarking.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'get_results_for_time_range',
+                nonce: wpHostingBenchmarking.nonce,
+                time_range: timeRange
+            },
+            success: function(response) {
+                if (response.success) {
+                    updateResultsTable(response.data);
+                    renderGraphs(response.data);
+                } else {
+                    alert('No results found for the selected time range.');
+                }
+            }
+        });
+    });
+
+
+
 $('#reset-test').on('click', function() {
     $.ajax({
         url: wpHostingBenchmarking.ajax_url,
@@ -291,31 +315,11 @@ function updateResultsTable(results) {
 
         tableBody.append(row);
 
-        $('#time-range').on('change', function() {
-        var timeRange = $(this).val();
-
-        $.ajax({
-            url: wpHostingBenchmarking.ajax_url,
-            type: 'POST',
-            data: {
-                action: 'get_results_for_time_range',
-                nonce: wpHostingBenchmarking.nonce,
-                time_range: timeRange
-            },
-            success: function(response) {
-                if (response.success) {
-                    updateResultsTable(response.data);
-                    renderGraphs(response.data);
-                } else {
-                    alert('No results found for the selected time range.');
-                }
-            }
-        });
-
         // Update last results for future comparisons
         //lastResults[result.region_name] = latency;
     });
 }
+
 function calculateLatencyDiff(region, currentLatency) {
     if (lastResults.hasOwnProperty(region)) {
         return currentLatency - lastResults[region];
