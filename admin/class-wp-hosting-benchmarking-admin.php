@@ -170,13 +170,13 @@ class Wp_Hosting_Benchmarking_Admin {
 			return $result;
 		}, $results);
         */
-        
+
         // Merge the data
         foreach ($latest_results as &$result) {
             foreach ($fastest_and_slowest as $fas_slow) {
-                if ($result['region_name'] === $fas_slow['region_name']) {
-                    $result['fastest_latency'] = $fas_slow['fastest_latency'];
-                    $result['slowest_latency'] = $fas_slow['slowest_latency'];
+                if ($result->region_name === $fas_slow->region_name) {
+                    $result->fastest_latency = $fas_slow->fastest_latency;
+                    $result->slowest_latency = $fas_slow->slowest_latency;
                     break;
                 }
             }

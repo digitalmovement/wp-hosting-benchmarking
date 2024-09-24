@@ -95,6 +95,6 @@ class Wp_Hosting_Benchmarking_DB {
             GROUP BY region_name
         ";
     
-        return $wpdb->get_results($query, ARRAY_A);
+        return $wpdb->get_results($query);
     }
 } // End of class
