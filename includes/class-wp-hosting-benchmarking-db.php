@@ -105,16 +105,16 @@ class Wp_Hosting_Benchmarking_DB {
         // Determine the time range
         switch($time_range) {
             case '24_hours':
-                $time_limit = "'1 DAY'";
+                $time_limit = '1 DAY';
                 break;
             case '7_days':
-                $time_limit = "'7 DAY'";
+                $time_limit = '7 DAY';
                 break;
             case '90_days':
-                $time_limit = "'90 DAY'";
+                $time_limit = '90 DAY';
                 break;
             default:
-                $time_limit = "'1 DAY'"; // Default to 24 hours
+                $time_limit = '1 DAY'; // Default to 24 hours
         }
     
         $query = $wpdb->prepare("
