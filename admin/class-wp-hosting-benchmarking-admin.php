@@ -58,6 +58,7 @@ class Wp_Hosting_Benchmarking_Admin {
 	 * @since    1.0.0
 	 */
     public function enqueue_scripts() {
+        wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', array(), null, true);
         wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/wp-hosting-benchmarking-admin.js', array('jquery'), $this->version, false);
 
         // Localize script after enqueuing
