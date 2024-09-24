@@ -20,6 +20,14 @@
     <div id="countdown"></div>
 </div>
 <div id="results-container">
+<div>
+    <label for="time-range">Select Time Range:</label>
+    <select id="time-range" class="time-range-dropdown">
+        <option value="24_hours">Last 24 Hours</option>
+        <option value="7_days">Last 7 Days</option>
+        <option value="90_days">Last 90 Days</option>
+    </select>
+</div>
     <h2>Latest Results</h2>
     <table id="latency-results" class="wp-list-table widefat fixed striped">
         <thead>
@@ -37,7 +45,13 @@
         </tbody>
     </table>
 </div>
-<div id="latency-graph"></div>
+<div id="graphs-container">
+    <h2>Graphs for Each Region</h2>
+    <div id="graph-{{region_name}}" style="height: 300px; width: 100%;">
+        <canvas id="graph-{{region_name}}"></canvas>
+    </div>
+</div>
+
 <button id="delete-results" class="button button-secondary">Delete All Results</button>
 </div>
 <script>

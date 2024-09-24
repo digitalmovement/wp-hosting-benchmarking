@@ -97,4 +97,34 @@ class Wp_Hosting_Benchmarking_DB {
     
         return $wpdb->get_results($query);
     }
+
+    public function get_results_by_time_range($time_range) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'hosting_benchmarking_results';
+        
+        // Determine the time range
+        switch($time_range) {
+            case '24_hours':
+                $time_limit = '1 DAY';
+                break;
+            case '7_days':
+                $time_limit = '7 DAY';
+                break;
+            case '90_days':
+                $time_limit = '90 DAY';
+                break;
+            default:
+                $time_limit = '1 DAY'; // Default to 24 hours
+        }
+    
+        $query = $wpdb->prepare("
+            SELECT * FROM $table_name
+            WHERE test_time >= NOW() - INTERVAL %s
+            ORDER BY test_time ASC
+        ", $time_limit);
+    
+        return $wpdb->get_results($query);
+    }
+
+
 } // End of class

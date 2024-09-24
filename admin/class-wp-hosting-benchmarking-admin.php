@@ -205,6 +205,22 @@ class Wp_Hosting_Benchmarking_Admin {
 
     }
 
+    public function get_results_for_time_range() {
+        check_ajax_referer('wp_hosting_benchmarking_nonce', 'nonce');
+        
+        $time_range = isset($_POST['time_range']) ? sanitize_text_field($_POST['time_range']) : '24_hours';
+    
+        // Fetch results from DB based on the time range
+        $results = $this->db->get_results_by_time_range($time_range);
+    
+        if (!empty($results)) {
+            wp_send_json_success($results);
+        } else {
+            wp_send_json_error('No results found for the selected time range.');
+        }
+    }
+
+    
     public function delete_all_results() {
         check_ajax_referer('wp_hosting_benchmarking_nonce', 'nonce');
         $this->db->delete_all_results();
