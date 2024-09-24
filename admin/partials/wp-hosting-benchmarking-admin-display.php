@@ -27,6 +27,8 @@
                 <th>Region</th>
                 <th>Current Latency (ms)</th>
                 <th>Difference</th>
+                <th>Fastest Latency (ms)</th>
+                <th>Slowest Latency (ms)</th>
                 <th>Last Updated</th>
             </tr>
         </thead>
@@ -212,9 +214,11 @@ function updateResultsTable(results) {
     results.forEach(function(result) {
         var row = $('<tr>');
 
-        // Convert latency to a number
+        // Convert latency and latency difference to numbers
         var latency = parseFloat(result.latency);
         var latencyDifference = parseFloat(result.latency_difference);
+        var fastestLatency = parseFloat(result.fastest_latency);
+        var slowestLatency = parseFloat(result.slowest_latency);
 
         // Check if latency is a valid number
         if (isNaN(latency)) {
@@ -230,10 +234,12 @@ function updateResultsTable(results) {
             diffClass = latencyDifference < 0 ? 'latency-faster' : (latencyDifference > 0 ? 'latency-slower' : '');
         }
 
-        // Create the table row
+        // Create the table row with added fastest and slowest latencies
         row.append($('<td>').text(result.region_name));
         row.append($('<td>').text(latency.toFixed(1) + ' ms'));
         row.append($('<td>').addClass(diffClass).text(diffText));
+        row.append($('<td>').text(fastestLatency.toFixed(1) + ' ms'));
+        row.append($('<td>').text(slowestLatency.toFixed(1) + ' ms'));
         row.append($('<td>').text(formatDate(result.test_time)));
 
         tableBody.append(row);

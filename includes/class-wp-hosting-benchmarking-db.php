@@ -82,4 +82,19 @@ class Wp_Hosting_Benchmarking_DB {
         $one_week_ago = date('Y-m-d H:i:s', strtotime('-1 week'));
         $wpdb->query($wpdb->prepare("DELETE FROM $table_name WHERE test_time < %s", $one_week_ago));
     }
-}
+
+    public function get_fastest_and_slowest_results() {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'hosting_benchmarking_results';
+    
+        $query = "
+            SELECT region_name, 
+                   MIN(latency) AS fastest_latency, 
+                   MAX(latency) AS slowest_latency
+            FROM $table_name
+            GROUP BY region_name
+        ";
+    
+        return $wpdb->get_results($query, ARRAY_A);
+    }
+} // End of class
