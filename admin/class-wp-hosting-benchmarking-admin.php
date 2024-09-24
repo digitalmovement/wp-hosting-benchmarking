@@ -212,7 +212,7 @@ class Wp_Hosting_Benchmarking_Admin {
     
         // Fetch results from DB based on the time range
         $results = $this->db->get_results_by_time_range($time_range);
-    	$results = $this->db->get_latest_results_by_region();
+    	//$results = $this->db->get_latest_results_by_region();
 	
         if (!empty($results)) {
             wp_send_json_success($results);
