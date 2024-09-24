@@ -102,6 +102,36 @@ jQuery(document).ready(function($) {
         }
     }
 
+    function renderGraphs(results) {
+        results.forEach(function(result) {
+            var region = result.region_name;
+            var ctx = document.getElementById('graph-' + region).getContext('2d');
+            
+            if (chartInstances[region]) {
+                chartInstances[region].destroy(); // Destroy the previous chart
+            }
+
+            chartInstances[region] = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: result.data.map(function(res) { return res.test_time; }),
+                    datasets: [{
+                        label: 'Latency (ms)',
+                        data: result.data.map(function(res) { return res.latency; }),
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 2,
+                        fill: false
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: { type: 'time', time: { unit: 'hour' } },
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        });
+    }
 
 $('#reset-test').on('click', function() {
     $.ajax({
@@ -221,6 +251,9 @@ $('#reset-test').on('click', function() {
         }
     });
 }
+
+
+
 function updateResultsTable(results) {
     var tableBody = $('#latency-results tbody');
     tableBody.empty();
@@ -258,8 +291,29 @@ function updateResultsTable(results) {
 
         tableBody.append(row);
 
+        $('#time-range').on('change', function() {
+        var timeRange = $(this).val();
+
+        $.ajax({
+            url: wpHostingBenchmarking.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'get_results_for_time_range',
+                nonce: wpHostingBenchmarking.nonce,
+                time_range: timeRange
+            },
+            success: function(response) {
+                if (response.success) {
+                    updateResultsTable(response.data);
+                    renderGraphs(response.data);
+                } else {
+                    alert('No results found for the selected time range.');
+                }
+            }
+        });
+
         // Update last results for future comparisons
-        lastResults[result.region_name] = latency;
+        //lastResults[result.region_name] = latency;
     });
 }
 function calculateLatencyDiff(region, currentLatency) {
