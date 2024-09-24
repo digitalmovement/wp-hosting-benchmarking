@@ -140,7 +140,7 @@ jQuery(document).ready(function($) {
             url: wpHostingBenchmarking.ajax_url,
             type: 'POST',
             data: {
-                action: 'wp_ajax_get_results_for_time_range',
+                action: 'get_results_for_time_range',
                 nonce: wpHostingBenchmarking.nonce,
                 time_range: timeRange
             },
