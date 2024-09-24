@@ -119,9 +119,9 @@ class Wp_Hosting_Benchmarking_DB {
     
         $query = $wpdb->prepare("
             SELECT * FROM $table_name
-            WHERE test_time >= NOW() - INTERVAL %s
+            WHERE test_time >= NOW() - INTERVAL $time_limit
             ORDER BY test_time ASC
-        ", $time_limit);
+        " );
     
         return $wpdb->get_results($query);
     }
