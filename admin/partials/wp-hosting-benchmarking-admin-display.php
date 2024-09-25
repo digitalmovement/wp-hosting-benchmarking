@@ -59,6 +59,7 @@ jQuery(document).ready(function($) {
     var countdownInterval;
     var isRunning = false; // Initialize isRunning as false
     var lastResults = {};
+    var chartInstances = {};
 
     function updateButtonState(isRunning) {
         $('#start-test').prop('disabled', isRunning); // Disable start button if running
