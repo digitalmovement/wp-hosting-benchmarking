@@ -54,3 +54,8 @@
 #deleteModal .discard-button:hover {
     background-color: #c9302c;
 }
+
+#wp-hosting-benchmarking .highlight-row {
+    background-color: #ffeb3b; /* Light yellow background */
+    font-weight: bold;
+}
