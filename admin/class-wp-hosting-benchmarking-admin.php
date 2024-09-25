@@ -250,33 +250,37 @@ class Wp_Hosting_Benchmarking_Admin {
     public function register_settings() {
         // Register a new setting for "wp_hosting_benchmarking_settings"
         register_setting('wp_hosting_benchmarking_settings', 'wp_hosting_benchmarking_option');
-        register_setting('wp_hosting_benchmarking_settings', 'wp_hosting_benchmarking_selected_region');
+    register_setting('wp_hosting_benchmarking_settings', 'wp_hosting_benchmarking_selected_region');
 
-        // Add a new section in the "Settings" page
-        add_settings_section(
-            'wp_hosting_benchmarking_section',
-            'General Settings',
-            null,
-            'wp-hosting-benchmarking-settings'
-        );
+    // Add a new section in the "Settings" page
+    add_settings_section(
+        'wp_hosting_benchmarking_section', // Section ID
+        'General Settings',                // Section title
+        null,                              // Section callback (not needed)
+        'wp-hosting-benchmarking-settings' // Page slug
+    );
 
-        // Add a new field to the "General Settings" section
-        add_settings_field(
-            'wp_hosting_benchmarking_field', 
-            'Sample Setting', 
-            array($this, 'render_sample_setting_field'), 
-            'wp-hosting-benchmarking-settings', 
-            'wp_hosting_benchmarking_settings_section1'
-        );
+    // Add a new field to the "General Settings" section
+    add_settings_field(
+        'wp_hosting_benchmarking_field',    // Field ID
+        'Sample Setting',                  // Field title
+        array($this, 'render_sample_setting_field'), // Callback function to render the field
+        'wp-hosting-benchmarking-settings', // Page slug
+        'wp_hosting_benchmarking_section'   // Section ID (fixed to match)
+    );
 
-          // Add a settings field (dropdown for GCP regions)
-        add_settings_field(
-            'wp_hosting_benchmarking_selected_region', // Field ID
-            'Select Closest GCP Region', // Field title
-            array($this, 'gcp_region_dropdown_callback'), // Callback to display the dropdown
-            'wp-hosting-benchmarking-settings', // Page slug
-            'wp_hosting_benchmarking_settings_section' // Section ID
-        );
+    // Add a settings field (dropdown for GCP regions)
+    add_settings_field(
+        'wp_hosting_benchmarking_selected_region', // Field ID
+        'Select Closest GCP Region',               // Field title
+        array($this, 'gcp_region_dropdown_callback'), // Callback to display the dropdown
+        'wp-hosting-benchmarking-settings',        // Page slug
+        'wp_hosting_benchmarking_section'          // Section ID (fixed to match)
+    );
+
+
+
+
 
     }
 
