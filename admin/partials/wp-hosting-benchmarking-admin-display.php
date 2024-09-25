@@ -12,7 +12,7 @@
  * @subpackage Wp_Hosting_Benchmarking/admin/partials
  */
 ?><div class="wrap">
-<h1><?php echo esc_html(get_admin_page_title()); ?></h1>
+<h1>Google Data Center Latency Testing</h1>
 <div id="latency-test-container">
     <button id="start-test" class="button button-primary">Start Latency Test</button>
     <button id="stop-test" class="button button-secondary" style="display:none;">Stop Latency Test</button>
@@ -136,13 +136,16 @@ function renderGraphs(results) {
         if (!regionData[result.region_name]) {
             regionData[result.region_name] = {
                 labels: [],
-                latencies: []
+                latencies: [],
+                lastUpdated: result.test_time // Store the latest update time
             };
         }
 
         // Parse test_time as a JavaScript Date object and latency as a number
         regionData[result.region_name].labels.push(new Date(result.test_time));
         regionData[result.region_name].latencies.push(parseFloat(result.latency));
+        regionData[result.region_name].lastUpdated = result.test_time;
+
     });
 
     // Now, create or update charts for each region
@@ -177,6 +180,29 @@ function renderGraphs(results) {
                     chartInstances[region].destroy();
                 }
 
+                var lastUpdatedTimePlugin = {
+                    id: 'lastUpdatedTimePlugin',
+                    afterDraw: function(chart) {
+                        var ctx = chart.ctx;
+                        var chartArea = chart.chartArea;
+                        var lastUpdated = regionData[region].lastUpdated;
+                        ctx.save();
+                        ctx.font = '12px Arial';
+                        ctx.fillStyle = 'gray';
+                        ctx.textAlign = 'center';
+
+                        // Format the date for display
+                        var formattedDate = new Date(lastUpdated).toLocaleString();
+                        // Display the last updated time under the chart
+                        ctx.fillText("Last updated: " + formattedDate, 
+                            (chartArea.left + chartArea.right) / 2, // Centered under the X-axis
+                            chartArea.bottom + 30 // Position it below the X-axis
+                        );
+                        ctx.restore();
+                        }
+                };
+
+
                 // Create a new Chart.js instance for the region
                 chartInstances[region] = new Chart(ctx, {
                     type: 'line',
@@ -210,8 +236,14 @@ function renderGraphs(results) {
                             y: {
                                 beginAtZero: true // Start Y-axis at zero
                             }
+                        },
+                        plugins: {
+                            legend: {
+                                display: true
+                            }
                         }
-                    }
+                    },
+                    plugins: [lastUpdatedTimePlugin] 
                 });
             }
     });

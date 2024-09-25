@@ -7,13 +7,13 @@
 .latency-slower { color: red!important; }   /* For positive differences (worsened latency) */
 #latency-results th, #latency-results td { padding: 8px; }
 
-.delete-button {
+#delete-results.button.delete-button {
     background-color: #d9534f; /* Bootstrap red color */
     color: white;
     border: none;
 }
 
-.delete-button:hover {
+#delete-results.button.delete-button:hover {
     background-color: #c9302c; /* Darker red on hover */
 }
 
