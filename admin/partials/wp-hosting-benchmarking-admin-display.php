@@ -16,6 +16,7 @@
 <div id="latency-test-container">
     <button id="start-test" class="button button-primary">Start Latency Test</button>
     <button id="stop-test" class="button button-secondary" style="display:none;">Stop Latency Test</button>
+    <button id="delete-results" class="button button-secondary">Delete All Results</button>
     <p id="test-status"></p>
     <div id="countdown"></div>
 </div>
@@ -48,7 +49,6 @@
     <h2>Graphs for Each Region</h2>
 </div>
 
-<button id="delete-results" class="button button-secondary">Delete All Results</button>
 </div>
 <script>
 jQuery(document).ready(function($) {

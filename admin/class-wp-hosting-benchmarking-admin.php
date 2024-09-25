@@ -214,8 +214,21 @@ class Wp_Hosting_Benchmarking_Admin {
     
         // Fetch results from DB based on the time range
         $results = $this->db->get_results_by_time_range($time_range);
-    	//$results = $this->db->get_latest_results_by_region();
-	
+        $fastest_and_slowest = $this->db->get_fastest_and_slowest_results();
+
+        // Merge the data
+        foreach ($latest_results as &$result) {
+            foreach ($fastest_and_slowest as $fas_slow) {
+                if ($result->region_name === $fas_slow->region_name) {                        
+                    $result->fastest_latency = $fas_slow->fastest_latency;
+                    $result->slowest_latency = $fas_slow->slowest_latency;
+                    break;
+                }
+            }
+        }
+
+                
+                
         if (!empty($results)) {
             wp_send_json_success($results);
         } else {
