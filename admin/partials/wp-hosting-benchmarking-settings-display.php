@@ -5,7 +5,7 @@
     <form method="post" action="options.php">
         <?php
         // Output security fields for the registered setting "wp_hosting_benchmarking_settings"
-        settings_fields('wp_hosting_benchmarking_settings');
+        settings_fields('wp_hosting_benchmarking_settings_section');
 
         // Output setting sections and fields
         do_settings_sections('wp_hosting_benchmarking_settings_section');
