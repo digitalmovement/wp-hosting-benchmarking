@@ -18,7 +18,7 @@
 }
 
     /* Modal styling */
-#wp-hosting-benchmarking .modal {
+#deleteModal .modal {
         display: none; /* Hidden by default */
         position: fixed;
         z-index: 1000;
@@ -29,7 +29,7 @@
         background-color: rgba(0, 0, 0, 0.4); /* Black with transparency */
 }
 
-#wp-hosting-benchmarking .modal-content {
+#deleteModal .modal-content {
         position: relative;
         margin: 15% auto;
         padding: 20px;
@@ -38,19 +38,19 @@
         border-radius: 5px;
 }
 
-#wp-hosting-benchmarking .modal-footer {
+#deleteModal .modal-footer {
         text-align: right;
 }
 
-#wp-hosting-benchmarking .modal-footer button {
+#deleteModal .modal-footer button {
         margin-left: 10px;
 }
 
-#wp-hosting-benchmarking .discard-button {
+#deleteModal .discard-button {
         background-color: #d9534f;
         color: white;
 }
 
-#wp-hosting-benchmarking .discard-button:hover {
+#deleteModal .discard-button:hover {
     background-color: #c9302c;
 }
