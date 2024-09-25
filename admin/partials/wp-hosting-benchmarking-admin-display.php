@@ -16,7 +16,7 @@
 <div id="latency-test-container">
     <button id="start-test" class="button button-primary">Start Latency Test</button>
     <button id="stop-test" class="button button-secondary" style="display:none;">Stop Latency Test</button>
-    <button id="delete-results" class="button button-secondary">Delete All Results</button>
+    <button id="delete-results" class="button button-secondary delete-button">Delete All Results</button>
     <p id="test-status"></p>
     <div id="countdown"></div>
 </div>
@@ -50,6 +50,20 @@
 </div>
 
 </div>
+
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="modal">
+    <div class="modal-content">
+        <h2>Discard all latency Data?</h2>
+        <p>This cannot be undone.</p>
+        <div class="modal-footer">
+            <button id="cancelButton" class="button button-secondary">Cancel</button>
+            <button id="confirmDelete" class="button discard-button">Discard</button>
+        </div>
+    </div>
+</div>
+
 <script>
 jQuery(document).ready(function($) {
     var countdownInterval;
@@ -298,6 +312,37 @@ $('#reset-test').on('click', function() {
             }
         });
     });
+
+    $('#delete-results').on('click', function() {
+        $('#deleteModal').css('display', 'block'); // Show the modal
+    });
+
+    // When cancel button is clicked, hide the modal
+    $('#cancelButton').on('click', function() {
+        $('#deleteModal').css('display', 'none'); // Hide the modal
+    });
+
+    // When confirm delete button is clicked, perform the delete action
+    $('#confirmDelete').on('click', function() {
+        $.ajax({
+            url: wpHostingBenchmarking.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'delete_all_results',
+                nonce: wpHostingBenchmarking.nonce
+            },
+            success: function(response) {
+                if (response.success) {
+                    $('#deleteModal').css('display', 'none'); // Hide the modal after successful deletion
+                    alert('All latency data discarded');
+                    // You may also want to refresh the results table here
+                } else {
+                    alert('Error discarding results');
+                }
+            }
+        });
+    });
+
 
 
     function startCountdown(duration) {

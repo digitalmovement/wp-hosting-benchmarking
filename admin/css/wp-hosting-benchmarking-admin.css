@@ -7,4 +7,50 @@
 .latency-slower { color: red!important; }   /* For positive differences (worsened latency) */
 #latency-results th, #latency-results td { padding: 8px; }
 
- 
+.delete-button {
+    background-color: #d9534f; /* Bootstrap red color */
+    color: white;
+    border: none;
+}
+
+.delete-button:hover {
+    background-color: #c9302c; /* Darker red on hover */
+}
+
+    /* Modal styling */
+    .modal {
+        display: none; /* Hidden by default */
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.4); /* Black with transparency */
+    }
+
+    .modal-content {
+        position: relative;
+        margin: 15% auto;
+        padding: 20px;
+        width: 300px;
+        background-color: white;
+        border-radius: 5px;
+    }
+
+    .modal-footer {
+        text-align: right;
+    }
+
+    .modal-footer button {
+        margin-left: 10px;
+    }
+
+    .discard-button {
+        background-color: #d9534f;
+        color: white;
+    }
+
+    .discard-button:hover {
+        background-color: #c9302c;
+    }
