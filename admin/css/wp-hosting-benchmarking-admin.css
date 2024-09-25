@@ -3,8 +3,8 @@
  * included in this file.
  */
 
-.latency-faster { color: green!important; } /* For negative differences (improved latency) */
-.latency-slower { color: red!important; }   /* For positive differences (worsened latency) */
+ #wp-hosting-benchmarking .latency-faster { color: green!important; } /* For negative differences (improved latency) */
+ #wp-hosting-benchmarking .latency-slower { color: red!important; }   /* For positive differences (worsened latency) */
 #latency-results th, #latency-results td { padding: 8px; }
 
 #wp-hosting-benchmarking .delete-button {
@@ -18,7 +18,7 @@
 }
 
     /* Modal styling */
-    .modal {
+#wp-hosting-benchmarking .modal {
         display: none; /* Hidden by default */
         position: fixed;
         z-index: 1000;
@@ -27,30 +27,30 @@
         width: 100%;
         height: 100%;
         background-color: rgba(0, 0, 0, 0.4); /* Black with transparency */
-    }
+}
 
-    .modal-content {
+#wp-hosting-benchmarking .modal-content {
         position: relative;
         margin: 15% auto;
         padding: 20px;
         width: 300px;
         background-color: white;
         border-radius: 5px;
-    }
+}
 
-    .modal-footer {
+#wp-hosting-benchmarking .modal-footer {
         text-align: right;
-    }
+}
 
-    .modal-footer button {
+#wp-hosting-benchmarking .modal-footer button {
         margin-left: 10px;
-    }
+}
 
-    .discard-button {
+#wp-hosting-benchmarking .discard-button {
         background-color: #d9534f;
         color: white;
-    }
+}
 
-    .discard-button:hover {
-        background-color: #c9302c;
-    }
+#wp-hosting-benchmarking .discard-button:hover {
+    background-color: #c9302c;
+}
