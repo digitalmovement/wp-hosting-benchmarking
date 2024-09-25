@@ -8,7 +8,7 @@
         settings_fields('wp_hosting_benchmarking_settings');
 
         // Output setting sections and fields
-        do_settings_sections('wp-hosting-benchmarking-settings');
+        do_settings_sections('wp_hosting_benchmarking_settings_section');
 ?>    
         <?php
         // Submit button
