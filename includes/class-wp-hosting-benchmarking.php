@@ -123,12 +123,21 @@ class Wp_Hosting_Benchmarking {
         $this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_styles');
         $this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts');
         $this->loader->add_action('admin_menu', $plugin_admin, 'add_plugin_admin_menu');
-        $this->loader->add_action('wp_ajax_start_latency_test', $plugin_admin, 'start_latency_test');
-        $this->loader->add_action('wp_ajax_stop_latency_test', $plugin_admin, 'stop_latency_test');
-        $this->loader->add_action('wp_ajax_get_latest_results', $plugin_admin, 'get_latest_results');
-        $this->loader->add_action('wp_ajax_delete_all_results', $plugin_admin, 'delete_all_results');
-		$this->loader->add_action('wp_ajax_get_results_for_time_range', $plugin_admin, 'get_results_for_time_range');
+//        $this->loader->add_action('wp_ajax_start_latency_test', $plugin_admin, 'start_latency_test');
+ //       $this->loader->add_action('wp_ajax_stop_latency_test', $plugin_admin, 'stop_latency_test');
+  //      $this->loader->add_action('wp_ajax_get_latest_results', $plugin_admin, 'get_latest_results');
+   //     $this->loader->add_action('wp_ajax_delete_all_results', $plugin_admin, 'delete_all_results');
+	//	$this->loader->add_action('wp_ajax_get_results_for_time_range', $plugin_admin, 'get_results_for_time_range');
 		
+
+		add_action('wp_ajax_start_latency_test', array($this->gcp_latency, 'start_latency_test'));
+		add_action('wp_ajax_reset_latency_test', array($this->gcp_latency, 'reset_latency_test'));
+		add_action('wp_ajax_stop_latency_test', array($this->gcp_latency, 'stop_latency_test'));
+		add_action('wp_ajax_get_latest_results', array($this->gcp_latency, 'get_latest_results'));
+		add_action('wp_ajax_get_results_for_time_range', array($this->gcp_latency, 'get_results_for_time_range'));
+		add_action('wp_ajax_delete_all_results', array($this->gcp_latency, 'delete_all_results'));
+
+
 		//	$this->loader->add_action('wp_ajax_get_results_for_time_range', array($this, 'get_results_for_time_range'));
   		
 	}
