@@ -268,6 +268,16 @@ class Wp_Hosting_Benchmarking_Admin {
             'wp-hosting-benchmarking-settings', 
             'wp_hosting_benchmarking_section'
         );
+
+          // Add a settings field (dropdown for GCP regions)
+        add_settings_field(
+            'wp_hosting_benchmarking_selected_region', // Field ID
+            'Select Closest GCP Region', // Field title
+            array($this, 'gcp_region_dropdown_callback'), // Callback to display the dropdown
+            'wp-hosting-benchmarking-settings', // Page slug
+            'wp_hosting_benchmarking_settings_section' // Section ID
+        );
+
     }
 
     /**
@@ -280,5 +290,24 @@ class Wp_Hosting_Benchmarking_Admin {
         <?php
     }
 
+    // Callback to display the GCP region dropdown
+    public function gcp_region_dropdown_callback() {
+        $api = new Wp_Hosting_Benchmarking_API(); // Create an instance of the API class
+        $gcp_endpoints = $api->get_gcp_endpoints(); // Fetch GCP endpoints
+        $selected_region = get_option('wp_hosting_benchmarking_selected_region'); // Get selected region
+
+        if (!empty($gcp_endpoints)) {
+            echo '<select name="wp_hosting_benchmarking_selected_region">';
+            foreach ($gcp_endpoints as $endpoint) {
+                $region_name = esc_attr($endpoint['region_name']);
+                echo '<option value="' . $region_name . '"' . selected($selected_region, $region_name, false) . '>';
+                echo esc_html($region_name);
+                echo '</option>';
+            }
+            echo '</select>';
+        } else {
+            echo '<p>No GCP endpoints available.</p>';
+        }
+    }
 
 }
