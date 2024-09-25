@@ -292,10 +292,10 @@ class Wp_Hosting_Benchmarking_Admin {
 
     // Callback to display the GCP region dropdown
     public function gcp_region_dropdown_callback() {
-        $api = new Wp_Hosting_Benchmarking_API(); // Create an instance of the API class
-        $gcp_endpoints = $api->get_gcp_endpoints(); // Fetch GCP endpoints
+      //  $api = new Wp_Hosting_Benchmarking_API(); // Create an instance of the API class
+        $gcp_endpoints = $this->api->get_gcp_endpoints(); // Fetch GCP endpoints
         $selected_region = get_option('wp_hosting_benchmarking_selected_region'); // Get selected region
-
+        echo "Start of gcp";
         if (!empty($gcp_endpoints)) {
             echo '<select name="wp_hosting_benchmarking_selected_region">';
             foreach ($gcp_endpoints as $endpoint) {

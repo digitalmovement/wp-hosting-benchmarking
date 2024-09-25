@@ -475,10 +475,9 @@ function updateResultsTable(results) {
         var row = $('<tr>');
 
         // Check if this is the selected region and highlight it
-        if (result.region_name === selectedRegion) {
+        if (region === selectedRegion) {
             row.addClass('highlight-row'); // Add a custom class to highlight the row
         }
-
 
         row.append($('<td>').text(region));
         row.append($('<td>').text(regionData[region].currentLatency.toFixed(1) + ' ms'));
