@@ -101,11 +101,27 @@ jQuery(document).ready(function($) {
             }
         }
     }
+    function createGraphContainer(regionName) {
+    var container = $('<div>').attr('id', 'graph-container-' + regionName).css({
+        height: '300px',
+        width: '100%'
+    });
+    var canvas = $('<canvas>').attr('id', 'graph-' + regionName);
+    container.append(canvas);
+    $('#graphs-container').append(container); // Append the new canvas to the main container
+}
 
     function renderGraphs(results) {
         results.forEach(function(result) {
             var region = result.region_name;
-            var ctx = document.getElementById('graph-' + region).getContext('2d');
+
+                    // Dynamically create the canvas element if it doesn't exist
+        if (!document.getElementById('graph-' + region)) {
+            createGraphContainer(region);
+        }
+
+        var ctx = document.getElementById('graph-' + region).getContext('2d');
+
             
             if (chartInstances[region]) {
                 chartInstances[region].destroy(); // Destroy the previous chart
