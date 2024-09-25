@@ -105,15 +105,19 @@ jQuery(document).ready(function($) {
     function createGraphContainer(regionName) {
     var container = $('<div>').attr('id', 'graph-container-' + regionName).css({
         height: '300px',
-        width: '100%'
+        width: '100%',
+        margin: '20px 0' // Add some spacing between graphs
     });
+
+    var title = $('<h3>').text('Graph for ' + regionName); // Add a title to the graph
     var canvas = $('<canvas>').attr('id', 'graph-' + regionName);
-    container.append(canvas);
-    $('#graphs-container').append(container); // Append the new canvas to the main container
+
+    container.append(title); // Append the title to the container
+    container.append(canvas); // Append the canvas to the container
+    $('#graphs-container').append(container); // Append the new container to the main container
 }
 
 function renderGraphs(results) {
-    // Group results by region, as we have multiple data points per region
     var regionData = {};
 
     results.forEach(function(result) {
@@ -150,7 +154,7 @@ function renderGraphs(results) {
             data: {
                 labels: regionData[region].labels, // X-axis labels (time)
                 datasets: [{
-                    label: 'Latency (ms)', // Label for the dataset
+                    label: 'Latency (ms) for ' + region, // Label for the dataset
                     data: regionData[region].latencies, // Y-axis data (latency)
                     borderColor: 'rgba(75, 192, 192, 1)', // Line color
                     borderWidth: 2,
@@ -159,20 +163,27 @@ function renderGraphs(results) {
             },
             options: {
                 scales: {
-                    x: { 
-                        type: 'time', // Use time scale for X-axis
-                        time: { unit: 'hour',
-                               tooltipFormat: 'DD T'
-                         } // Time unit (adjust as needed)
+                    x: {
+                        type: 'time', // Use time scale
+                        time: {
+                            unit: 'hour' // Adjust based on your data (can be 'day', 'minute', etc.)
+                        }
                     },
-                    y: { 
-                        beginAtZero: true // Start Y-axis at zero
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Latency Data for ' + region // Display region name as chart title
                     }
                 }
             }
         });
     });
 }
+
     $('#time-range').on('change', function() {
         var timeRange = $(this).val();
 
