@@ -266,7 +266,7 @@ class Wp_Hosting_Benchmarking_Admin {
             'Sample Setting', 
             array($this, 'render_sample_setting_field'), 
             'wp-hosting-benchmarking-settings', 
-            'wp_hosting_benchmarking_settings_section'
+            'wp_hosting_benchmarking_settings_section1'
         );
 
           // Add a settings field (dropdown for GCP regions)
