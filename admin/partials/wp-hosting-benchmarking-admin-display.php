@@ -112,44 +112,65 @@ jQuery(document).ready(function($) {
     $('#graphs-container').append(container); // Append the new canvas to the main container
 }
 
-    function renderGraphs(results) {
-        results.forEach(function(result) {
-            var region = result.region_name;
+function renderGraphs(results) {
+    // Group results by region, as we have multiple data points per region
+    var regionData = {};
 
-                    // Dynamically create the canvas element if it doesn't exist
+    results.forEach(function(result) {
+        // Check if the region already exists in the regionData object
+        if (!regionData[result.region_name]) {
+            regionData[result.region_name] = {
+                labels: [],
+                latencies: []
+            };
+        }
+
+        // Add the test_time and latency to the respective region's data
+        regionData[result.region_name].labels.push(result.test_time);
+        regionData[result.region_name].latencies.push(result.latency);
+    });
+
+    // Now, create or update charts for each region
+    Object.keys(regionData).forEach(function(region) {
+        // Dynamically create the canvas element if it doesn't exist
         if (!document.getElementById('graph-' + region)) {
             createGraphContainer(region);
         }
 
         var ctx = document.getElementById('graph-' + region).getContext('2d');
 
-            
-            if (chartInstances[region]) {
-                chartInstances[region].destroy(); // Destroy the previous chart
-            }
+        // Destroy the previous chart instance if it exists
+        if (chartInstances[region]) {
+            chartInstances[region].destroy();
+        }
 
-            chartInstances[region] = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: result.data.map(function(res) { return res.test_time; }),
-                    datasets: [{
-                        label: 'Latency (ms)',
-                        data: result.data.map(function(res) { return res.latency; }),
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        borderWidth: 2,
-                        fill: false
-                    }]
-                },
-                options: {
-                    scales: {
-                        x: { type: 'time', time: { unit: 'hour' } },
-                        y: { beginAtZero: true }
+        // Create a new Chart.js instance for the region
+        chartInstances[region] = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: regionData[region].labels, // X-axis labels (time)
+                datasets: [{
+                    label: 'Latency (ms)', // Label for the dataset
+                    data: regionData[region].latencies, // Y-axis data (latency)
+                    borderColor: 'rgba(75, 192, 192, 1)', // Line color
+                    borderWidth: 2,
+                    fill: false
+                }]
+            },
+            options: {
+                scales: {
+                    x: { 
+                        type: 'time', // Use time scale for X-axis
+                        time: { unit: 'hour' } // Time unit (adjust as needed)
+                    },
+                    y: { 
+                        beginAtZero: true // Start Y-axis at zero
                     }
                 }
-            });
+            }
         });
-    }
-
+    });
+}
     $('#time-range').on('change', function() {
         var timeRange = $(this).val();
 
