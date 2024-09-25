@@ -115,7 +115,7 @@ class Wp_Hosting_Benchmarking_Admin {
             'Settings',                         // Menu title
             'manage_options',                   // Capability
             'wp-hosting-benchmarking-settings', // Slug for settings
-            array($this, 'display_plugin_settings_page') // Callback for settings
+            array($this, 'display_settings_page') // Callback for settings
         );
     }
 
@@ -138,14 +138,6 @@ class Wp_Hosting_Benchmarking_Admin {
     public function display_settings_page() {
         include_once 'partials/wp-hosting-benchmarking-settings-display.php';
     }
-
-    
-    /* start gcp-latancy */
-
-	
-
-       /* end gcp-latancy */
- 
 
     /**
      * Register plugin settings.
