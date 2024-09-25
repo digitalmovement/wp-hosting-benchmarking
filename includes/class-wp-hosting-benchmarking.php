@@ -35,6 +35,7 @@ class Wp_Hosting_Benchmarking {
     private $db;
     private $api;
 	private $gcp_latency;
+	private $ssl_testing;
 
 	
 	public function __construct() {
@@ -93,6 +94,7 @@ class Wp_Hosting_Benchmarking {
         $this->db = new Wp_Hosting_Benchmarking_DB();
         $this->api = new Wp_Hosting_Benchmarking_API();
 		$this->gcp_latency = new Wp_Hosting_Benchmarking_GCP_Latency($this->db, $this->api);
+		$this->ssl_testing = new Wp_Hosting_Benchmarking_SSL_Testing($this->db, $this->api);
 
     }
 
@@ -140,6 +142,9 @@ class Wp_Hosting_Benchmarking {
 		add_action('wp_ajax_get_results_for_time_range', array($this->gcp_latency, 'get_results_for_time_range'));
 		add_action('wp_ajax_delete_all_results', array($this->gcp_latency, 'delete_all_results'));
 
+
+		add_action('wp_ajax_ssl_registration', array($this->ssl_testing, 'handle_ssl_registration'));
+		add_action('wp_ajax_ssl_testing', array($this->ssl_testing, 'handle_ssl_testing'));
 
 		//	$this->loader->add_action('wp_ajax_get_results_for_time_range', array($this, 'get_results_for_time_range'));
   		
