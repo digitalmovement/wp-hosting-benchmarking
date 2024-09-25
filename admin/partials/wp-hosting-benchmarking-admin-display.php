@@ -161,7 +161,9 @@ function renderGraphs(results) {
                 scales: {
                     x: { 
                         type: 'time', // Use time scale for X-axis
-                        time: { unit: 'hour' } // Time unit (adjust as needed)
+                        time: { unit: 'hour',
+                               tooltipFormat: 'DD T'
+                         } // Time unit (adjust as needed)
                     },
                     y: { 
                         beginAtZero: true // Start Y-axis at zero
