@@ -66,7 +66,8 @@ class Wp_Hosting_Benchmarking_Admin {
         // Localize script after enqueuing
         wp_localize_script($this->plugin_name, 'wpHostingBenchmarking', array(
             'ajax_url' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('wp_hosting_benchmarking_nonce') // Create nonce properly within this hook
+            'nonce' => wp_create_nonce('wp_hosting_benchmarking_nonce'), // Create nonce properly within this hook
+            'selected_region' => get_option('wp_hosting_benchmarking_selected_region') // Pass the selected region            
         ));
     }
   /**
@@ -249,6 +250,7 @@ class Wp_Hosting_Benchmarking_Admin {
     public function register_settings() {
         // Register a new setting for "wp_hosting_benchmarking_settings"
         register_setting('wp_hosting_benchmarking_settings', 'wp_hosting_benchmarking_option');
+        register_setting('wp_hosting_benchmarking_settings', 'wp_hosting_benchmarking_selected_region');
 
         // Add a new section in the "Settings" page
         add_settings_section(

@@ -430,6 +430,7 @@ function updateResultsTable(results) {
     var tableBody = $('#latency-results tbody');
     tableBody.empty();
     var regionData = {};
+    var selectedRegion = wpHostingBenchmarking.selected_region; // Get selected region from localized script
 
     results.forEach(function(result) {
         var region = result.region_name;
@@ -472,6 +473,13 @@ function updateResultsTable(results) {
     // Create table rows for each region
     Object.keys(regionData).forEach(function(region) {
         var row = $('<tr>');
+
+        // Check if this is the selected region and highlight it
+        if (result.region_name === selectedRegion) {
+            row.addClass('highlight-row'); // Add a custom class to highlight the row
+        }
+
+
         row.append($('<td>').text(region));
         row.append($('<td>').text(regionData[region].currentLatency.toFixed(1) + ' ms'));
         row.append($('<td>').text(regionData[region].fastestLatency.toFixed(1) + ' ms'));
