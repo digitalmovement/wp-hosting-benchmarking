@@ -34,7 +34,6 @@
             <tr>
                 <th>Region</th>
                 <th>Current Latency (ms)</th>
-                <th>Difference</th>
                 <th>Fastest Latency (ms)</th>
                 <th>Slowest Latency (ms)</th>
                 <th>Last Updated</th>
@@ -357,27 +356,39 @@ function updateResultsTable(results) {
 
     results.forEach(function(result) {
         var region = result.region_name;
+        var latency = parseFloat(result.latency); // Parse latency as float
+        var fastestLatency = parseFloat(result.fastest_latency);
+        var slowestLatency = parseFloat(result.slowest_latency);
+        var testTime = result.test_time; // Get the test time
+
 
         // If the region doesn't exist in regionData, initialize it
         if (!regionData[region]) {
             regionData[region] = {
-                currentLatency: parseFloat(result.latency),
-                fastestLatency: parseFloat(result.fastest_latency),
-                slowestLatency: parseFloat(result.slowest_latency),
-                lastUpdated: result.test_time
+                currentLatency: latency,
+                fastestLatency: fastestLatency,
+                slowestLatency: slowestLatency,
+                lastUpdated: testTime
             };
         } else {
             // Update the current latency
-            regionData[region].currentLatency = parseFloat(result.latency);
-            // Update the fastest and slowest latency if necessary
-            if (parseFloat(result.fastest_latency) < regionData[region].fastestLatency) {
-                regionData[region].fastestLatency = parseFloat(result.fastest_latency);
+            // Update current latency with the latest value
+    
+            // Update the fastest latency if the current one is smaller
+            if (fastestLatency < regionData[region].fastestLatency) {
+                regionData[region].fastestLatency = fastestLatency;
             }
-            if (parseFloat(result.slowest_latency) > regionData[region].slowestLatency) {
-                regionData[region].slowestLatency = parseFloat(result.slowest_latency);
+
+            // Update the slowest latency if the current one is larger
+            if (slowestLatency > regionData[region].slowestLatency) {
+                regionData[region].slowestLatency = slowestLatency;
             }
-            // Update last updated time
-            regionData[region].lastUpdated = result.test_time;
+
+            // Update last updated time if the current test is more recent
+            if (new Date(testTime) > new Date(regionData[region].lastUpdated)) {
+                regionData[region].currentLatency = latency;
+                regionData[region].lastUpdated = testTime;
+            }
         }
     });
 
