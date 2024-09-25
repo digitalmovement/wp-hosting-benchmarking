@@ -133,8 +133,8 @@ function renderGraphs(results) {
        // regionData[result.region_name].labels.push(result.test_time);
         //regionData[result.region_name].latencies.push(result.latency);
 
-        regionData[region].labels.push(new Date(result.test_time).toLocaleTimeString());
-        regionData[region].latencies.push(parseFloat(result.latency));
+        regionData[result.region_name].labels.push(new Date(result.test_time).toLocaleTimeString());
+        regionData[result.region_name].latencies.push(parseFloat(result.latency));
 
     });
 
