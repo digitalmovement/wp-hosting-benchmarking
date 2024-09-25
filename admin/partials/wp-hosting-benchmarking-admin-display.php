@@ -118,6 +118,7 @@ jQuery(document).ready(function($) {
 }
 
 function renderGraphs(results) {
+    // Group results by region, as we have multiple data points per region
     var regionData = {};
 
     results.forEach(function(result) {
@@ -129,14 +130,10 @@ function renderGraphs(results) {
             };
         }
 
-        // Add the test_time and latency to the respective region's data
-       // regionData[result.region_name].labels.push(result.test_time);
-        //regionData[result.region_name].latencies.push(result.latency);
-
-        regionData[result.region_name].labels.push(new Date(result.test_time).toLocaleTimeString());
+        // Parse test_time as a JavaScript Date object and latency as a number
+        regionData[result.region_name].labels.push(new Date(result.test_time));
         regionData[result.region_name].latencies.push(parseFloat(result.latency));
-
-    }); 
+    });
 
     // Now, create or update charts for each region
     Object.keys(regionData).forEach(function(region) {
@@ -170,23 +167,22 @@ function renderGraphs(results) {
                     x: {
                         type: 'time', // Use time scale
                         time: {
-                            unit: 'hour' // Adjust based on your data (can be 'day', 'minute', etc.)
+                            unit: 'hour', // Adjust based on your data granularity
+                            tooltipFormat: 'MMM D, h:mm A', // Format for the tooltips
+                            displayFormats: {
+                                hour: 'h A' // Display format for x-axis
+                            }
                         }
                     },
                     y: {
-                        beginAtZero: true
-                    }
-                },
-                plugins: {
-                    title: {
-                        display: true,
-                        text: 'Latency Data for ' + region // Display region name as chart title
+                        beginAtZero: true // Start Y-axis at zero
                     }
                 }
             }
         });
     });
 }
+
 
     $('#time-range').on('change', function() {
         var timeRange = $(this).val();
