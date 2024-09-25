@@ -11,7 +11,7 @@
  * @package    Wp_Hosting_Benchmarking
  * @subpackage Wp_Hosting_Benchmarking/admin/partials
  */
-?><div class="wrap">
+?><div id="wp-hosting-benchmarking" class="wrap">
 <h1>Google Data Center Latency Testing</h1>
 <div id="latency-test-container">
     <button id="start-test" class="button button-primary">Start Latency Test</button>
