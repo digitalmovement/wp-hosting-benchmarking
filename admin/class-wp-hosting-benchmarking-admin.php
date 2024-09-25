@@ -313,6 +313,6 @@ class Wp_Hosting_Benchmarking_Admin {
             echo '<p>No GCP endpoints available.</p>';
         }
            // Explanation text
-        echo '<p class="description">Please select the region closest to where most of your customers or visitors are based. ';
+        echo '<p class="description">Please select the region closest to where most of your customers or visitors are based. </p>';
     }
 }
