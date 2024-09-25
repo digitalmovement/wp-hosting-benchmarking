@@ -136,7 +136,7 @@ function renderGraphs(results) {
         regionData[result.region_name].labels.push(new Date(result.test_time).toLocaleTimeString());
         regionData[result.region_name].latencies.push(parseFloat(result.latency));
 
-    });
+    }); 
 
     // Now, create or update charts for each region
     Object.keys(regionData).forEach(function(region) {
