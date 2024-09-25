@@ -76,7 +76,11 @@ class Wp_Hosting_Benchmarking {
 		require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-wp-hosting-benchmarking-loader.php';
 		require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-wp-hosting-benchmarking-i18n.php';
         require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-wp-hosting-benchmarking-admin.php';
-        require_once plugin_dir_path(dirname(__FILE__)) . 'public/class-wp-hosting-benchmarking-public.php';
+        //require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-wp-hosting-benchmarking-dashboard.php';
+        require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-wp-hosting-benchmarking-ssl-testing.php';
+        require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-wp-hosting-benchmarking-gcp-latency.php';
+
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/class-wp-hosting-benchmarking-public.php';
 		require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-wp-hosting-benchmarking-api.php';
         require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-wp-hosting-benchmarking-db.php';
 

@@ -26,12 +26,15 @@ class Wp_Hosting_Benchmarking_Admin {
     private $version;
     private $db;
     private $api;
+    private $gcp_latency;
 
 	public function __construct( $plugin_name, $version ) {
 
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
 		$this->init_components();
+        $this->gcp_latency = new Wp_Hosting_Benchmarking_GCP_Latency($this->db, $this->api);
+
       // Hook into 'admin_enqueue_scripts' to enqueue scripts/styles
       add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
       add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
@@ -74,24 +77,45 @@ class Wp_Hosting_Benchmarking_Admin {
      * Add admin menu item for WP Benchmarking
      */
     public function add_plugin_admin_menu() {
+
         add_menu_page(
             'WP Benchmarking',
             'WP Benchmarking',
             'manage_options',
-            'wp-hosting-benchmarking',
-            array( $this, 'display_plugin_admin_page' ),
+            'wp-hosting-benchmarking', // Slug for dashboard
+            array($this, 'display_plugin_admin_page'), // Callback for dashboard
             'dashicons-performance',
-            999 // Set a high number to ensure it's the last menu item
+            999 // Position in the admin menu
         );
-
-        // Add a submenu for Settings
+    
+        // Add submenu for GCP Latency Testing
         add_submenu_page(
-            'wp-hosting-benchmarking',    // Parent slug
-            'Settings',                   // Page title
-            'Settings',                   // Menu title
-            'manage_options',             // Capability
-            'wp-hosting-benchmarking-settings',  // Menu slug
-            array($this, 'display_settings_page')  // Callback function
+            'wp-hosting-benchmarking', // Parent slug (dashboard)
+            'Latency Testing',              // Page title
+            'Latency Testing',              // Menu title
+            'manage_options',                   // Capability
+            'wp-hosting-benchmarking-latency',  // Slug for latency testing
+            array($this, 'display_gcp_latency_page') // Callback function
+        );
+    
+        // Add submenu for SSL Testing
+        add_submenu_page(
+            'wp-hosting-benchmarking', // Parent slug
+            'SSL Testing',                      // Page title
+            'SSL Testing',                      // Menu title
+            'manage_options',                   // Capability
+            'wp-hosting-benchmarking-ssl',      // Slug for SSL testing
+            array($this, 'display_ssl_testing_page') // Callback function
+        );
+    
+        // Add submenu for Settings
+        add_submenu_page(
+            'wp-hosting-benchmarking', // Parent slug
+            'Settings',                         // Page title
+            'Settings',                         // Menu title
+            'manage_options',                   // Capability
+            'wp-hosting-benchmarking-settings', // Slug for settings
+            array($this, 'display_plugin_settings_page') // Callback for settings
         );
     }
 
@@ -103,146 +127,25 @@ class Wp_Hosting_Benchmarking_Admin {
         include_once 'partials/wp-hosting-benchmarking-admin-display.php';
     }
 
+    public function display_gcp_latency_page() {
+        include_once 'partials/wp-hosting-benchmarking-gcp-latency-display.php';
+    }
+
+    public function display_ssl_testing_page() {
+        include_once 'partials/wp-hosting-benchmarking-ssl-testing-display.php';
+    }
+
     public function display_settings_page() {
         include_once 'partials/wp-hosting-benchmarking-settings-display.php';
     }
 
     
-
-	public function start_latency_test() {
-        check_ajax_referer('wp_hosting_benchmarking_nonce', 'nonce');
-
-        if (!wp_next_scheduled('wp_hosting_benchmarking_cron_hook')) {
-            $start_time = time();
-            update_option('wp_hosting_benchmarking_start_time', $start_time);
-            wp_schedule_event($start_time, 'five_minutes', 'wp_hosting_benchmarking_cron_hook');
-
-            // Run the first test immediately
-            $endpoints = $this->api->get_gcp_endpoints();
-            foreach ($endpoints as $endpoint) {
-                $latency = $this->api->ping_endpoint($endpoint['url']);
-                if ($latency !== false) {
-                    $this->db->insert_result($endpoint['region_name'], $latency);
-                }
-            }
-
-            wp_send_json_success(array(
-                'message' => 'Test started successfully',
-                'start_time' => $start_time
-            ));
-        } else {
-            wp_send_json_error('Test is already running');
-        }
-    }
-    
-    public function reset_latency_test() {
-        check_ajax_referer('wp_hosting_benchmarking_nonce', 'nonce');
-
-        wp_clear_scheduled_hook('wp_hosting_benchmarking_cron_hook');
-        delete_option('wp_hosting_benchmarking_start_time');
-        wp_send_json_success('Test reset successfully');
-    
-        check_ajax_referer('wp_hosting_benchmarking_nonce', 'nonce');
-
-        if (!wp_next_scheduled('wp_hosting_benchmarking_cron_hook')) {
-            wp_schedule_event(time(), 'five_minutes', 'wp_hosting_benchmarking_cron_hook');
-            update_option('wp_hosting_benchmarking_start_time', time());
-            
-            // Run the first test immediately
-            $endpoints = $this->api->get_gcp_endpoints();
-            foreach ($endpoints as $endpoint) {
-                $latency = $this->api->ping_endpoint($endpoint['url']);
-                if ($latency !== false) {
-                    $this->db->insert_result($endpoint['region_name'], $latency);
-                }
-            }
-            
-            wp_send_json_success('Test started successfully');
-        } else {
-            wp_send_json_error('Test is already running');
-        }
-    }
+    /* start gcp-latancy */
 
 	
-    public function stop_latency_test() {
-        check_ajax_referer('wp_hosting_benchmarking_nonce', 'nonce');
 
-        wp_clear_scheduled_hook('wp_hosting_benchmarking_cron_hook');
-        delete_option('wp_hosting_benchmarking_start_time');
-        wp_send_json_success('Test stopped successfully');
-    }
-
-
-    public function get_latest_results() {
-        check_ajax_referer('wp_hosting_benchmarking_nonce', 'nonce');
-		if (!$this->db) {
-            wp_send_json_error('Database object not initialized');
-            return;
-        }
-
-        //$results = $this->db->get_latest_results();
-		$latest_results = $this->db->get_latest_results_by_region();
-		$fastest_and_slowest = $this->db->get_fastest_and_slowest_results();
-
-        /*
-		$results = array_map(function($result) {
-			$result->latency = (float) $result->latency;
-			return $result;
-		}, $results);
-        */
-
-        // Merge the data
-        foreach ($latest_results as &$result) {
-            foreach ($fastest_and_slowest as $fas_slow) {
-                if ($result->region_name === $fas_slow->region_name) {
-                    $result->fastest_latency = $fas_slow->fastest_latency;
-                    $result->slowest_latency = $fas_slow->slowest_latency;
-                    break;
-                }
-            }
-        }
-
-		
-        wp_send_json_success($latest_results);
-
-
-    }
-
-    public function get_results_for_time_range() {
-        check_ajax_referer('wp_hosting_benchmarking_nonce', 'nonce');
-        
-        $time_range = isset($_POST['time_range']) ? sanitize_text_field($_POST['time_range']) : '24_hours';
-    
-        // Fetch results from DB based on the time range
-        $results = $this->db->get_results_by_time_range($time_range);
-        $fastest_and_slowest = $this->db->get_fastest_and_slowest_results();
-
-        // Merge the data
-        foreach ($results as &$result) {
-            foreach ($fastest_and_slowest as $fas_slow) {
-                if ($result->region_name === $fas_slow->region_name) {                        
-                    $result->fastest_latency = $fas_slow->fastest_latency;
-                    $result->slowest_latency = $fas_slow->slowest_latency;
-                    break;
-                }
-            }
-        }
-
-                
-                
-        if (!empty($results)) {
-            wp_send_json_success($results);
-        } else {
-            wp_send_json_error('No results found for the selected time range.');
-        }
-    }
-
-    
-    public function delete_all_results() {
-        check_ajax_referer('wp_hosting_benchmarking_nonce', 'nonce');
-        $this->db->delete_all_results();
-        wp_send_json_success('All results deleted');
-    }
+       /* end gcp-latancy */
+ 
 
     /**
      * Register plugin settings.
