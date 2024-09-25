@@ -47,9 +47,6 @@
 </div>
 <div id="graphs-container">
     <h2>Graphs for Each Region</h2>
-    <div id="graph-{{region_name}}" style="height: 300px; width: 100%;">
-        <canvas id="graph-{{region_name}}"></canvas>
-    </div>
 </div>
 
 <button id="delete-results" class="button button-secondary">Delete All Results</button>
@@ -142,44 +139,68 @@ function renderGraphs(results) {
             createGraphContainer(region);
         }
 
-        var ctx = document.getElementById('graph-' + region).getContext('2d');
+        if (regionData[region].latencies.length < 10) {
+            // Show a message if there are fewer than 10 data points
 
-        // Destroy the previous chart instance if it exists
-        if (chartInstances[region]) {
-            chartInstances[region].destroy();
-        }
+            var ctx = document.getElementById('graph-' + region).getContext('2d');
+            var message = "Awaiting more data for " + region;
 
-        // Create a new Chart.js instance for the region
-        chartInstances[region] = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: regionData[region].labels, // X-axis labels (time)
-                datasets: [{
-                    label: 'Latency (ms) for ' + region, // Label for the dataset
-                    data: regionData[region].latencies, // Y-axis data (latency)
-                    borderColor: 'rgba(75, 192, 192, 1)', // Line color
-                    borderWidth: 2,
-                    fill: false
-                }]
-            },
-            options: {
-                scales: {
-                    x: {
-                        type: 'time', // Use time scale
-                        time: {
-                            unit: 'hour', // Adjust based on your data granularity
-                            tooltipFormat: 'MMM D, h:mm A', // Format for the tooltips
-                            displayFormats: {
-                                hour: 'h A' // Display format for x-axis
+            // Clear the canvas before drawing the message
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            ctx.font = "16px Arial";
+            ctx.fillStyle = "black";
+            ctx.textAlign = "center";
+            ctx.fillText(message, ctx.canvas.width / 2, ctx.canvas.height / 2);
+        } else {
+
+
+
+
+
+                var ctx = document.getElementById('graph-' + region).getContext('2d');
+
+                // Destroy the previous chart instance if it exists
+                if (chartInstances[region]) {
+                    chartInstances[region].destroy();
+                }
+
+                // Create a new Chart.js instance for the region
+                chartInstances[region] = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: regionData[region].labels, // X-axis labels (time)
+                        datasets: [{
+                            label: 'Latency (ms) for ' + region, // Label for the dataset
+                            data: regionData[region].latencies, // Y-axis data (latency)
+                            borderColor: 'rgba(75, 192, 192, 1)', // Line color
+                            borderWidth: 2,
+                            fill: false
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: {
+                                type: 'time', // Use time scale
+                                time: {
+                                        unit: 'hour', // Adjust based on your data granularity
+                                        tooltipFormat: 'MMM D, h:mm A', // Format for the tooltips
+                                        displayFormats: {
+                                            hour: 'h:mm A' // Display format for x-axis
+                                        }
+                                },
+                                ticks: {
+                                        autoSkip: true, // Automatically skip ticks for better spacing
+                                        maxTicksLimit: 6, // Limits the number of ticks shown
+                                        source: 'auto',
+                                }
+                            },
+                            y: {
+                                beginAtZero: true // Start Y-axis at zero
                             }
                         }
-                    },
-                    y: {
-                        beginAtZero: true // Start Y-axis at zero
                     }
-                }
+                });
             }
-        });
     });
 }
 
@@ -332,9 +353,60 @@ $('#reset-test').on('click', function() {
 function updateResultsTable(results) {
     var tableBody = $('#latency-results tbody');
     tableBody.empty();
+    var regionData = {};
 
     results.forEach(function(result) {
+        var region = result.region_name;
+
+        // If the region doesn't exist in regionData, initialize it
+        if (!regionData[region]) {
+            regionData[region] = {
+                currentLatency: parseFloat(result.latency),
+                fastestLatency: parseFloat(result.fastest_latency),
+                slowestLatency: parseFloat(result.slowest_latency),
+                lastUpdated: result.test_time
+            };
+        } else {
+            // Update the current latency
+            regionData[region].currentLatency = parseFloat(result.latency);
+            // Update the fastest and slowest latency if necessary
+            if (parseFloat(result.fastest_latency) < regionData[region].fastestLatency) {
+                regionData[region].fastestLatency = parseFloat(result.fastest_latency);
+            }
+            if (parseFloat(result.slowest_latency) > regionData[region].slowestLatency) {
+                regionData[region].slowestLatency = parseFloat(result.slowest_latency);
+            }
+            // Update last updated time
+            regionData[region].lastUpdated = result.test_time;
+        }
+    });
+
+    // Create table rows for each region
+    Object.keys(regionData).forEach(function(region) {
         var row = $('<tr>');
+        row.append($('<td>').text(region));
+        row.append($('<td>').text(regionData[region].currentLatency.toFixed(1) + ' ms'));
+        row.append($('<td>').text(regionData[region].fastestLatency.toFixed(1) + ' ms'));
+        row.append($('<td>').text(regionData[region].slowestLatency.toFixed(1) + ' ms'));
+        row.append($('<td>').text(formatDate(regionData[region].lastUpdated)));
+        tableBody.append(row);
+    });
+
+    /*
+
+
+    results.forEach(function(result) {
+        var region = result.region_name;
+        var row = $('<tr>');
+
+
+        ///
+
+
+
+
+
+///
 
         // Convert latency and latency difference to numbers
         var latency = parseFloat(result.latency);
@@ -369,6 +441,7 @@ function updateResultsTable(results) {
         // Update last results for future comparisons
         //lastResults[result.region_name] = latency;
     });
+    */
 }
 
 function calculateLatencyDiff(region, currentLatency) {
