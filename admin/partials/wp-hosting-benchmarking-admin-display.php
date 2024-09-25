@@ -130,8 +130,12 @@ function renderGraphs(results) {
         }
 
         // Add the test_time and latency to the respective region's data
-        regionData[result.region_name].labels.push(result.test_time);
-        regionData[result.region_name].latencies.push(result.latency);
+       // regionData[result.region_name].labels.push(result.test_time);
+        //regionData[result.region_name].latencies.push(result.latency);
+
+        regionData[region].labels.push(new Date(result.test_time).toLocaleTimeString());
+        regionData[region].latencies.push(parseFloat(result.latency));
+
     });
 
     // Now, create or update charts for each region
