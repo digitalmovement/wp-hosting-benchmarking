@@ -34,6 +34,7 @@ class Wp_Hosting_Benchmarking {
     private $version;
     private $db;
     private $api;
+	private $gcp_latency;
 
 	
 	public function __construct() {
@@ -91,6 +92,8 @@ class Wp_Hosting_Benchmarking {
 	private function init_components() {
         $this->db = new Wp_Hosting_Benchmarking_DB();
         $this->api = new Wp_Hosting_Benchmarking_API();
+		$this->gcp_latency = new Wp_Hosting_Benchmarking_GCP_Latency($this->db, $this->api);
+
     }
 
 	/**
