@@ -158,8 +158,7 @@ class Wp_Hosting_Benchmarking_SSL_Testing {
         $output .= '<li><i class="fas fa-calendar-times"></i> Valid until: ' . date('Y-m-d', $cert['notAfter']/1000) . '</li>';
         $output .= '</ul>';
 
-        $cert = $cert[0];
-        
+
         $output .= '<ul>';
         $output .= '<li><strong>Subject:</strong> ' . esc_html($cert['subject']) . '</li>';
         $output .= '<li><strong>Fingerprint SHA256:</strong> ' . esc_html($cert['sha256Hash']) . '</li>';
