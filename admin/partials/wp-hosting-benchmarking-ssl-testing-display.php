@@ -95,7 +95,7 @@ jQuery(document).ready(function($) {
         $(targetTab).addClass('active');
     });
 
-    
+
     function startSSLTest() {
         $.ajax({
             url: ajaxurl,
@@ -109,6 +109,7 @@ jQuery(document).ready(function($) {
                     if (response.data.status && response.data.status !== 'READY') {
                         // Test is still in progress, update status and poll again
                         $('#test-status').html('Status: ' + response.data.status + ' - ' + response.data.message);
+                        setupSSLTabs(); // Call this function to initialize tabs
                         setTimeout(startSSLTest, 10000); // Poll again after 10 seconds
                     } else {
                         // Test is complete, display results
@@ -129,4 +130,34 @@ jQuery(document).ready(function($) {
 
     
 });
+
+function initSSLTabs(containerId) {
+    jQuery(document).ready(function($) {
+        const container = $(`#${containerId}`);
+        
+        container.find('.ssl-tab-links a').on('click', function(e) {
+            e.preventDefault();
+            var targetTab = $(this).attr('href');
+
+            // Remove active class from all tabs and contents
+            container.find('.ssl-tab-links li').removeClass('active');
+            container.find('.ssl-tab').removeClass('active');
+
+            // Add active class to current tab and content
+            $(this).parent('li').addClass('active');
+            container.find(targetTab).addClass('active');
+        });
+    });
+}
+
+// This function will be called after the AJAX request is complete
+function setupSSLTabs() {
+    const sslResultsContainer = document.querySelector('.ssl-test-results');
+    if (sslResultsContainer) {
+        initSSLTabs(sslResultsContainer.id);
+    }
+}
+
+
+
 </script>
