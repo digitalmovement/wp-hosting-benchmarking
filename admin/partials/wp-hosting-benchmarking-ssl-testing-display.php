@@ -54,40 +54,6 @@ $cached_result = get_transient($wp_hosting_benchmarking_ssl_testing->transient_k
 jQuery(document).ready(function($) {
     // Handle registration
     var checkStatusInterval;
-    $('#ssl-registration-form').on('submit', function(event) {
-        event.preventDefault();
-
-        var email = $('#email').val();
-        var invalidDomains = ['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com'];
-        var emailDomain = email.split('@')[1];
-
-        // Check if email is from a disallowed domain
-        if (invalidDomains.includes(emailDomain)) {
-            $('#email-error').text('Email addresses from Gmail, Yahoo, Outlook, or Hotmail are not allowed.');
-            return;
-        }
-
-        var formData = $(this).serialize();
-
-        $.ajax({
-            url: ajaxurl,
-            type: 'POST',
-            data: {
-                action: 'ssl_registration',
-                form_data: formData,
-                nonce: '<?php echo wp_create_nonce('ssl_registration_nonce'); ?>'
-            },
-            success: function(response) {
-                if (response.success) {
-                    location.reload(); // Reload the page after successful registration
-                } else {
-                    $('#email-error').text(response.data);
-                }
-            }
-        });
-    });
-
-    // Handle SSL testing with polling
     $('#ssl-testing-form').on('submit', function(event) {
         event.preventDefault();
         $('#test-status').text('Initiating SSL test, please wait...');
@@ -114,12 +80,12 @@ jQuery(document).ready(function($) {
                         $('#test-status').text('SSL test completed successfully.');
                         $('#test-ssl-button').prop('disabled', false).val('Retest SSL');
                         $('#loading-icon').hide();
+                        setupSSLTabs(); // Initialize tabs after results are displayed
                     }
                 } else {
                     $('#test-status').text('Error starting SSL test: ' + response.data);
                     $('#test-ssl-button').prop('disabled', false);
                     $('#loading-icon').hide();
-                    setupSSLTabs(); // Initialize tabs after results are displayed
                 }
             },
             error: function() {
@@ -146,6 +112,7 @@ jQuery(document).ready(function($) {
                         $('#test-status').text('SSL test completed successfully.');
                         $('#test-ssl-button').prop('disabled', false).val('Retest SSL');
                         $('#loading-icon').hide();
+                        setupSSLTabs(); // Initialize tabs after results are displayed
                     } else if (response.data.status === 'in_progress') {
                         $('#test-status').text(response.data.message);
                     }
@@ -174,7 +141,7 @@ function initSSLTabs(containerId) {
             return;
         }
 
-        container.find('.ssl-tab-links a').on('click', function(e) {
+        container.find('.ssl-tab-links a').off('click').on('click', function(e) {
             e.preventDefault();
             var targetTab = jQuery(this).attr('href');
             console.log("Target tab:", targetTab);
@@ -207,7 +174,6 @@ function initSSLTabs(containerId) {
     }
 }
 
-// This function will be called after the AJAX request is complete
 function setupSSLTabs() {
     const sslResultsContainer = document.querySelector('.ssl-test-results');
     if (sslResultsContainer) {
@@ -217,5 +183,11 @@ function setupSSLTabs() {
         console.log("SSL Results container not found");
     }
 }
+
+// Initialize tabs on page load if results are already present
+jQuery(document).ready(function($) {
+    if ($('.ssl-test-results').length > 0) {
+        setupSSLTabs();
+    }
 
 </script>
