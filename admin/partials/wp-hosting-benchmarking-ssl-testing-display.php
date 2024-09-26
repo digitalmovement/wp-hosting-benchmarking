@@ -76,11 +76,7 @@ jQuery(document).ready(function($) {
                         $('#test-status').text(response.data.message);
                         checkStatusInterval = setInterval(checkSSLTestStatus, 60000); // Check every 60 seconds
                     } else if (response.data.status === 'completed') {
-                        $('#ssl-results').html(response.data.data);
-                        $('#test-status').text('SSL test completed successfully.');
-                        $('#test-ssl-button').prop('disabled', false).val('Retest SSL');
-                        $('#loading-icon').hide();
-                        setupSSLTabs(); // Initialize tabs after results are displayed
+                        displaySSLResults(response.data.data);
                     }
                 } else {
                     $('#test-status').text('Error starting SSL test: ' + response.data);
@@ -108,11 +104,7 @@ jQuery(document).ready(function($) {
                 if (response.success) {
                     if (response.data.status === 'completed') {
                         clearInterval(checkStatusInterval);
-                        $('#ssl-results').html(response.data.data);
-                        $('#test-status').text('SSL test completed successfully.');
-                        $('#test-ssl-button').prop('disabled', false).val('Retest SSL');
-                        $('#loading-icon').hide();
-                        setupSSLTabs(); // Initialize tabs after results are displayed
+                        displaySSLResults(response.data.data);
                     } else if (response.data.status === 'in_progress') {
                         $('#test-status').text(response.data.message);
                     }
@@ -133,56 +125,65 @@ jQuery(document).ready(function($) {
     }
 });
 
-function initSSLTabs(containerId) {
-    try {
-        const container = jQuery(`#${containerId}`);
-        if (container.length === 0) {
-            console.error(`Container with ID "${containerId}" not found.`);
-            return;
+function displaySSLResults(data) {
+        $('#ssl-results').html(data);
+        $('#test-status').text('SSL test completed successfully.');
+        $('#test-ssl-button').prop('disabled', false).val('Retest SSL');
+        $('#loading-icon').hide();
+        setupSSLTabs();
+    }
+
+
+    function initSSLTabs(containerId) {
+        try {
+            const container = jQuery(`#${containerId}`);
+            if (container.length === 0) {
+                console.error(`Container with ID "${containerId}" not found.`);
+                return;
+            }
+
+            container.find('.ssl-tab-links a').off('click').on('click', function(e) {
+                e.preventDefault();
+                var targetTab = jQuery(this).attr('href');
+                console.log("Target tab:", targetTab);
+
+                if (!targetTab) {
+                    console.error("Target tab attribute is missing or empty.");
+                    return;
+                }
+
+                // Remove active class from all tabs and contents
+                container.find('.ssl-tab-links li').removeClass('active');
+                container.find('.ssl-tab').removeClass('active');
+
+                // Add active class to current tab and content
+                jQuery(this).parent('li').addClass('active');
+                
+                var targetElement = container.find(targetTab);
+                if (targetElement.length === 0) {
+                    console.error(`Target tab element "${targetTab}" not found.`);
+                    return;
+                }
+                targetElement.addClass('active');
+                
+                console.log("Tab clicked:", targetTab);
+            });
+
+            console.log("SSL Tabs initialized for container:", containerId);
+        } catch (error) {
+            console.error("Error in initSSLTabs:", error);
         }
-
-        container.find('.ssl-tab-links a').off('click').on('click', function(e) {
-            e.preventDefault();
-            var targetTab = jQuery(this).attr('href');
-            console.log("Target tab:", targetTab);
-
-            if (!targetTab) {
-                console.error("Target tab attribute is missing or empty.");
-                return;
-            }
-
-            // Remove active class from all tabs and contents
-            container.find('.ssl-tab-links li').removeClass('active');
-            container.find('.ssl-tab').removeClass('active');
-
-            // Add active class to current tab and content
-            jQuery(this).parent('li').addClass('active');
-            
-            var targetElement = container.find(targetTab);
-            if (targetElement.length === 0) {
-                console.error(`Target tab element "${targetTab}" not found.`);
-                return;
-            }
-            targetElement.addClass('active');
-            
-            console.log("Tab clicked:", targetTab);
-        });
-
-        console.log("SSL Tabs initialized for container:", containerId);
-    } catch (error) {
-        console.error("Error in initSSLTabs:", error);
     }
-}
 
-function setupSSLTabs() {
-    const sslResultsContainer = document.querySelector('.ssl-test-results');
-    if (sslResultsContainer) {
-        initSSLTabs(sslResultsContainer.id);
-        console.log("SSL Tabs initialized for container: " + sslResultsContainer.id);
-    } else {
-        console.log("SSL Results container not found");
+    function setupSSLTabs() {
+        const sslResultsContainer = document.querySelector('.ssl-test-results');
+        if (sslResultsContainer) {
+            initSSLTabs(sslResultsContainer.id);
+            console.log("SSL Tabs initialized for container: " + sslResultsContainer.id);
+        } else {
+            console.log("SSL Results container not found");
+        }
     }
-}
 
 // Initialize tabs on page load if results are already present
 jQuery(document).ready(function($) {

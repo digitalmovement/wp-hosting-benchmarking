@@ -21,10 +21,8 @@ class Wp_Hosting_Benchmarking_SSL_Testing {
         check_ajax_referer('ssl_testing_nonce', 'nonce');
 
         $registered_user = get_option('wp_hosting_benchmarking_registered_user');
-        $email = isset($registered_user['email']) ? $registered_user['email'] : 'jdoe@digitalmovement.co.uk';
-
+        $email = isset($registered_user['email']) ? $registered_user['email'] : 'default@example.com';
         $email = "jdoe@digitalmovement.co.uk";
-        
         $result = $this->api->test_ssl_certificate(home_url(), $email);
 
         if (is_array($result) && isset($result['status']) && $result['status'] !== 'READY') {
@@ -37,6 +35,7 @@ class Wp_Hosting_Benchmarking_SSL_Testing {
             wp_send_json_error('Failed to start SSL test.');
         }
     }
+
 
     public function check_ssl_test_status() {
         check_ajax_referer('ssl_testing_nonce', 'nonce');
@@ -70,6 +69,11 @@ class Wp_Hosting_Benchmarking_SSL_Testing {
     private function cache_ssl_results($result) {
         set_transient($this->transient_key, $result, HOUR_IN_SECONDS);
     }
+
+    public function get_cached_results() {
+        return get_transient($this->transient_key);
+    }
+
 
     // Display the SSL testing page
        // Display the SSL testing or registration page
