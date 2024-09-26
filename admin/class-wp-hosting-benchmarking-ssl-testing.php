@@ -85,7 +85,14 @@ class Wp_Hosting_Benchmarking_SSL_Testing {
 
     // Add the format_ssl_test_results function here
     function format_ssl_test_results($result) {
+
         $output = '<div class="ssl-test-results">';
+        
+        $output .= '<pre>';
+
+        $output .= print_r($result,true); 
+        $output .= '</pre>';
+
         
         // Overall Rating
         $grade = $result['endpoints'][0]['grade'];
