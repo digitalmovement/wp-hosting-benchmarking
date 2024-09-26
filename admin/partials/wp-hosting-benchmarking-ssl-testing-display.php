@@ -165,7 +165,15 @@ $registered_user = isset($registered_user) ? $registered_user : false;
             console.error("Error in initSSLTabs:", error);
         }
     }
-
+    function setupSSLTabs() {
+        const sslResultsContainer = document.querySelector('.ssl-test-results');
+        if (sslResultsContainer) {
+            initSSLTabs(sslResultsContainer.id);
+            console.log("SSL Tabs initialized for container: " + sslResultsContainer.id);
+        } else {
+            console.log("SSL Results container not found");
+        }
+    }
 
 jQuery(document).ready(function($) {
     // Handle SSL testing form submission
