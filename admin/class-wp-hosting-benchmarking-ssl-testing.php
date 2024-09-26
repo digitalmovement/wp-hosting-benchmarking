@@ -147,7 +147,7 @@ class Wp_Hosting_Benchmarking_SSL_Testing {
         $output .= '</pre>';
     
         // Certificate Information
-        $output = '<div class="ssl-test-results" id="ssl-test-results-' . uniqid() . '>';
+        $output = '<div class="ssl-test-results" id="ssl-test-results-' . uniqid() . ">';
     
         // Overall Rating (always visible)
         $grade = $result['endpoints'][0]['grade'];
