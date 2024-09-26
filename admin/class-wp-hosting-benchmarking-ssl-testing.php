@@ -411,8 +411,26 @@ class Wp_Hosting_Benchmarking_SSL_Testing {
         $output .= '<li><strong>Extended Validation:</strong> ' . ($cert['validationType'] === 'EV' ? 'Yes' : 'No') . '</li>';
         $output .= '<li><strong>Certificate Transparency:</strong> ' . ($cert['sct'] ? 'Yes' : 'No') . '</li>';
         $output .= '<li><strong>OCSP Must Staple:</strong> ' . ($cert['mustStaple'] ? 'Yes' : 'No') . '</li>';
-        $output .= '<li><strong>Revocation information:</strong> ' . esc_html(implode(', ', $cert['revocationInfo'])) . '</li>';
-        $output .= '<li><strong>Revocation status:</strong> ' . esc_html($cert['revocationStatus']) . '</li>';
+
+
+        $output .= '<li><strong>Revocation information:</strong> ';
+        if (isset($cert['revocationInfo'])) {
+            if (is_array($cert['revocationInfo'])) {
+                $output .= esc_html(implode(', ', $cert['revocationInfo']));
+            } else {
+                $output .= esc_html($cert['revocationInfo']);
+            }
+        } else {
+            $output .= 'Not available';
+        }
+        $output .= '</li>';
+    
+        // Handle revocation status
+        $output .= '<li><strong>Revocation status:</strong> ';
+        $output .= isset($cert['revocationStatus']) ? esc_html($cert['revocationStatus']) : 'Not available';
+        $output .= '</li>';
+
+        
         $output .= '<li><strong>DNS CAA:</strong> ' . ($result['endpoints'][0]['details']['hasDnsCaa'] ? 'Yes' : 'No') . '</li>';
         $output .= '</ul>';
     
