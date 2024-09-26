@@ -247,7 +247,7 @@ class Wp_Hosting_Benchmarking_SSL_Testing {
     
         // Cipher Suites
         $output .= '<div id="tab-ciphers" class="ssl-tab">';
-        $output .= $this->format_cipher_suites($result['endpoints'][0]['details']['suites']['list']);
+        $output .= $this->format_cipher_suites($result['endpoints'][0]['details']['suites']);
         $output .= '</div>';
     
         // Handshake Simulation
