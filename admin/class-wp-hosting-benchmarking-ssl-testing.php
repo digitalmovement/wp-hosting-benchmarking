@@ -88,7 +88,7 @@ class Wp_Hosting_Benchmarking_SSL_Testing {
 
         $output = '<div class="ssl-test-results">';
         
-        $output .= '<pre>';
+        $output .= '<pre>--';
 
         $output .= print_r($result,true); 
         $output .= '</pre>';
