@@ -90,3 +90,41 @@
 .ssl-simulations-table tr:hover {
     background-color: #f5f5f5;
 }
+
+
+.http-transaction {
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.http-transaction h4 {
+    margin-top: 0;
+    color: #333;
+}
+
+.http-transaction h5 {
+    margin-top: 15px;
+    margin-bottom: 10px;
+    color: #555;
+}
+
+.http-transaction h6 {
+    margin-top: 10px;
+    margin-bottom: 5px;
+    color: #777;
+}
+
+.http-transaction ul {
+    list-style-type: none;
+    padding-left: 20px;
+}
+
+.http-transaction li {
+    margin-bottom: 5px;
+}
+
+.http-transaction strong {
+    font-weight: bold;
+}

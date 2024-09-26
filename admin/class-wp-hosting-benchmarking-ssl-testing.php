@@ -136,7 +136,7 @@ class Wp_Hosting_Benchmarking_SSL_Testing {
         $output .= '</ul>';
         $output .= $this->format_ssl_simulations($result['endpoints'][0]['details']['sims']);
         // HTTP Request Information
-        $output .= format_http_request_info($result['endpoints'][0]['details']['httpTransactions']);
+        $output .= $this->format_http_request_info($result['endpoints'][0]['details']['httpTransactions']);
 
 
         // Vulnerabilities
@@ -232,7 +232,7 @@ class Wp_Hosting_Benchmarking_SSL_Testing {
     }
 
 
-    
+
 
 } // end of class
 
