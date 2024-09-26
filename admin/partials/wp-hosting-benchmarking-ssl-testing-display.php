@@ -30,6 +30,9 @@ $registered_user = isset($registered_user) ? $registered_user : false;
     <?php else: ?>
         <form id="ssl-testing-form">
             <input type="submit" id="test-ssl-button" class="button button-primary" value="Test SSL">
+            <span id="loading-icon" style="display: none; margin-left: 10px;">
+                <i class="fa-solid fa-spinner fa-spin-pulse"></i>
+            </span>
             <p id="test-status"></p>
         </form>
     <?php endif; ?>
