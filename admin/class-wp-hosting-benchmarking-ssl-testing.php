@@ -16,6 +16,7 @@ class Wp_Hosting_Benchmarking_SSL_Testing {
     public function display_ssl_testing_page() {
         // Check if the user is already registered
         $registered_user = get_option('wp_hosting_benchmarking_registered_user');
+        echo "reg details:";
         print_r($registered_user);
         // Include the HTML + JS from the display file
         include plugin_dir_path(__FILE__) . 'admin/partials/wp-hosting-benchmarking-ssl-testing-display.php';
