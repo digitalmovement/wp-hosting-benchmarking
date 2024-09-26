@@ -48,8 +48,8 @@ class Wp_Hosting_Benchmarking_API {
             ),
             'body' => array(
                 'host' => $host,
-                'startNew' => 'on', // Start a new assessment if there's no cached result
-                'fromCache' => 'off', // Don't use cached results
+           //     'startNew' => 'on', // Start a new assessment if there's no cached result
+                'fromCache' => 'on', // Don't use cached results
                 'ignoreMismatch' => 'on' // Proceed even if there's a mismatch
             )
         );
