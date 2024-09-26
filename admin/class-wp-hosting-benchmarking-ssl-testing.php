@@ -16,13 +16,15 @@ class Wp_Hosting_Benchmarking_SSL_Testing {
        public function display_ssl_testing_page() {
         // Check if the user is already registered
         $registered_user = get_option('wp_hosting_benchmarking_registered_user');
-        
+
         // Include the HTML + JS from the display file
-        include plugin_dir_path(__FILE__) . 'wp-hosting-benchmarking-ssl-testing-display.php';
+        include plugin_dir_path(__FILE__) . 'admin/partials/wp-hosting-benchmarking-ssl-testing-display.php';
     }
 
+
+
     // Handle user registration via Ajax
-    public function handle_ssl_registration() {
+     public function handle_ssl_registration() {
         check_ajax_referer('ssl_registration_nonce', 'nonce');
 
         parse_str($_POST['form_data'], $form_data);
