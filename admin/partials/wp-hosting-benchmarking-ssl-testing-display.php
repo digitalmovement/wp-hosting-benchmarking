@@ -75,9 +75,13 @@ jQuery(document).ready(function($) {
     $('#ssl-testing-form').on('submit', function(event) {
         event.preventDefault();
 
-        $('#test-status').text('Testing SSL, please wait...');
+        $('#test-status').text('Initiating SSL test, please wait...');
         $('#test-ssl-button').prop('disabled', true);
 
+        startSSLTest();
+    });
+
+    function startSSLTest() {
         $.ajax({
             url: ajaxurl,
             type: 'POST',
@@ -87,13 +91,24 @@ jQuery(document).ready(function($) {
             },
             success: function(response) {
                 if (response.success) {
-                    $('#test-status').html(response.data); // Display the formatted HTML
+                    if (response.data.status && response.data.status !== 'READY') {
+                        // Test is still in progress, update status and poll again
+                        $('#test-status').html('Status: ' + response.data.status + ' - ' + response.data.message);
+                        setTimeout(startSSLTest, 10000); // Poll again after 10 seconds
+                    } else {
+                        // Test is complete, display results
+                        $('#test-status').html(response.data);
+                        $('#test-ssl-button').prop('disabled', false);
+                    }
                 } else {
-                    $('#test-status').text('Error testing SSL.');
+                    $('#test-status').text('Error testing SSL: ' + response.data);
+                    $('#test-ssl-button').prop('disabled', false);
                 }
-                $('#test-ssl-button').prop('disabled', false); // Re-enable button
+            },
+            error: function() {
+                $('#test-status').text('An error occurred while communicating with the server.');
+                $('#test-ssl-button').prop('disabled', false);
             }
         });
-    });
-});
+    }
 </script>

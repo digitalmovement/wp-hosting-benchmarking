@@ -57,20 +57,27 @@ class Wp_Hosting_Benchmarking_SSL_Testing {
     public function handle_ssl_testing() {
         check_ajax_referer('ssl_testing_nonce', 'nonce');
 
-        $api = new Wp_Hosting_Benchmarking_API();
-       // $result = $api->test_ssl_certificate(home_url());
-        $result = $api->test_ssl_certificate(home_url(), 'jdoe@digitalmovement.co.uk');
+        //$api = new Wp_Hosting_Benchmarking_API();
+    
+        $registered_user = get_option('wp_hosting_benchmarking_registered_user');
+        $email = $registered_user['email'];
+        $email = 'jdoe@digitalmovement.co.uk';   
+    
+        $result = $this->api->test_ssl_certificate(home_url(), $email);
 
-        if (isset($result['error'])) {
-            // Handle the error
-            echo "Error: " . $result['error'];
-        } elseif (isset($result['status']) && $result['status'] !== 'READY') {
-            // Handle in-progress status
-            echo "Status: " . $result['status'] . " - " . $result['message'];
+        if (is_array($result)) {
+            if (isset($result['error'])) {
+                wp_send_json_error($result['error']);
+            } elseif (isset($result['status']) && $result['status'] !== 'READY') {
+                // Test is still in progress
+                wp_send_json_success($result);
+            } else {
+                // Test is complete
+                $formatted_result = $this->format_ssl_test_results($result);
+                wp_send_json_success($formatted_result);
+            }
         } else {
-            // Process the full SSL Labs data
-            $formatted_result = $this->format_ssl_test_results($result);
-            echo $formatted_result;
+            wp_send_json_error('Invalid response from SSL testing API');
         }
 
 
