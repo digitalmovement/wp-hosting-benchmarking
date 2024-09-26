@@ -145,12 +145,6 @@ class Wp_Hosting_Benchmarking_SSL_Testing {
 
         $output .= print_r($result,true); 
         $output .= '</pre>';
-
-        
-        // Overall Rating
-        $grade = $result['endpoints'][0]['grade'];
-        $grade_color = ($grade === 'A' || $grade === 'A+') ? 'green' : (($grade === 'B') ? 'orange' : 'red');
-        $output .= '<h2><i class="fas fa-award" style="color: ' . $grade_color . ';"></i> Overall Rating: <span style="color: ' . $grade_color . ';">' . $grade . '</span></h2>';
     
         // Certificate Information
         $output = '<div class="ssl-test-results">';
