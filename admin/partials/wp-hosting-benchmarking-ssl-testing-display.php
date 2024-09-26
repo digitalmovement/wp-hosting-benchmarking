@@ -189,5 +189,5 @@ jQuery(document).ready(function($) {
     if ($('.ssl-test-results').length > 0) {
         setupSSLTabs();
     }
-
+});
 </script>
