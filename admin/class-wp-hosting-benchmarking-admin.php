@@ -27,16 +27,14 @@ class Wp_Hosting_Benchmarking_Admin {
     private $db;
     private $api;
     private $gcp_latency;
-    private $ssl_testing;
 
-    
+
 	public function __construct( $plugin_name, $version ) {
 
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
 		$this->init_components();
         $this->gcp_latency = new Wp_Hosting_Benchmarking_GCP_Latency($this->db, $this->api);
-        $this->ssl_testing = new Wp_Hosting_Benchmarking_SSL_Testing($this->db, $this->api);
 
    
       // Hook into 'admin_enqueue_scripts' to enqueue scripts/styles
@@ -146,7 +144,8 @@ class Wp_Hosting_Benchmarking_Admin {
 
         $cached_result = get_transient($this->transient_key);
         $registered_user = get_option('wp_hosting_benchmarking_registered_user');
-        include_once 'partials/wp-hosting-benchmarking-ssl-testing-display.php';
+        echo "loading page";
+       // include_once 'partials/wp-hosting-benchmarking-ssl-testing-display.php';
     }
 
     public function display_settings_page() {
