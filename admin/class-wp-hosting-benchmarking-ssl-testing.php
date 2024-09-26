@@ -204,7 +204,7 @@ class Wp_Hosting_Benchmarking_SSL_Testing {
     
 
     // Add the format_ssl_test_results function here
-    function format_ssl_test_results($result) {
+    public function format_ssl_test_results($result) {
 
   
         $output .= '<pre>--';
