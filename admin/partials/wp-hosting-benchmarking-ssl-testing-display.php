@@ -79,6 +79,7 @@ jQuery(document).ready(function($) {
 
         $('#test-status').text('Initiating SSL test, please wait...');
         $('#test-ssl-button').prop('disabled', true);
+        $('#loading-icon').show(); // Show the loading icon
 
         startSSLTest();
     });
@@ -102,15 +103,20 @@ jQuery(document).ready(function($) {
                         $('#test-status').html(response.data);
                         setupSSLTabs(); // Initialize tabs after results are displayed
                         $('#test-ssl-button').prop('disabled', false);
+                        $('#loading-icon').show(); // Show the loading icon
+                        
                     }
                 } else {
                     $('#test-status').text('Error testing SSL: ' + response.data);
                     $('#test-ssl-button').prop('disabled', false);
+                    $('#loading-icon').hide(); // Hide the loading icon
+
                 }
             },
             error: function() {
                 $('#test-status').text('An error occurred while communicating with the server.');
                 $('#test-ssl-button').prop('disabled', false);
+                $('#loading-icon').hide();
             }
         });
     }
