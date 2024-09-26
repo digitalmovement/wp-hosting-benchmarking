@@ -4,18 +4,78 @@ class Wp_Hosting_Benchmarking_SSL_Testing {
 
     private $db;
     private $api;
+    private $transient_key = 'wp_hosting_benchmarking_ssl_results';
+    private $in_progress_key = 'wp_hosting_benchmarking_ssl_test_in_progress';
+
 
     public function __construct($db, $api) {
         $this->db = $db;
         $this->api = $api;
+        add_action('wp_ajax_start_ssl_test', array($this, 'start_ssl_test'));
+        add_action('wp_ajax_check_ssl_test_status', array($this, 'check_ssl_test_status'));
+        add_action('wp_ajax_nopriv_check_ssl_test_status', array($this, 'check_ssl_test_status'));
+
     }
 
+    public function start_ssl_test() {
+        check_ajax_referer('ssl_testing_nonce', 'nonce');
+
+        $registered_user = get_option('wp_hosting_benchmarking_registered_user');
+        $email = isset($registered_user['email']) ? $registered_user['email'] : 'default@example.com';
+
+        $result = $this->api->test_ssl_certificate(home_url(), $email);
+
+        if (is_array($result) && isset($result['status']) && $result['status'] !== 'READY') {
+            set_transient($this->in_progress_key, $result, 30 * MINUTE_IN_SECONDS);
+            wp_send_json_success(array('status' => 'in_progress', 'message' => 'SSL test initiated. Please wait.'));
+        } elseif (is_array($result) && !isset($result['error'])) {
+            $this->cache_ssl_results($result);
+            wp_send_json_success(array('status' => 'completed', 'data' => $this->format_ssl_test_results($result)));
+        } else {
+            wp_send_json_error('Failed to start SSL test.');
+        }
+    }
+
+    public function check_ssl_test_status() {
+        check_ajax_referer('ssl_testing_nonce', 'nonce');
+
+        $in_progress_result = get_transient($this->in_progress_key);
+
+        if (false === $in_progress_result) {
+            $cached_result = get_transient($this->transient_key);
+            if (false !== $cached_result) {
+                wp_send_json_success(array('status' => 'completed', 'data' => $this->format_ssl_test_results($cached_result)));
+            } else {
+                wp_send_json_error('No SSL test in progress or cached results available.');
+            }
+            return;
+        }
+
+        $result = $this->api->check_ssl_test_status($in_progress_result);
+
+        if (is_array($result) && isset($result['status']) && $result['status'] === 'READY') {
+            delete_transient($this->in_progress_key);
+            $this->cache_ssl_results($result);
+            wp_send_json_success(array('status' => 'completed', 'data' => $this->format_ssl_test_results($result)));
+        } elseif (is_array($result) && isset($result['status'])) {
+            wp_send_json_success(array('status' => 'in_progress', 'message' => 'SSL test still in progress. Status: ' . $result['status']));
+        } else {
+            wp_send_json_error('Failed to check SSL test status.');
+        }
+    }
+
+
+    private function cache_ssl_results($result) {
+        set_transient($this->transient_key, $result, HOUR_IN_SECONDS);
+    }
 
     // Display the SSL testing page
        // Display the SSL testing or registration page
     public function display_ssl_testing_page() {
         // Check if the user is already registered
         $registered_user = get_option('wp_hosting_benchmarking_registered_user');
+        $cached_result = get_transient($this->transient_key);
+
         echo "reg details:";
         print_r($registered_user);
         // Include the HTML + JS from the display file

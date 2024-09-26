@@ -4,6 +4,7 @@
 $current_user = wp_get_current_user();
 $user_email = $current_user->user_email;
 $registered_user = isset($registered_user) ? $registered_user : false;
+$cached_result = get_transient($wp_hosting_benchmarking_ssl_testing->transient_key);
 
 ?>
 <div class="wrap">
@@ -28,8 +29,17 @@ $registered_user = isset($registered_user) ? $registered_user : false;
         </form>
         <p id="email-error" style="color: red;"></p>
     <?php else: ?>
+        <div id="ssl-results">
+            <?php 
+            if ($cached_result) {
+                echo $wp_hosting_benchmarking_ssl_testing->format_ssl_test_results($cached_result);
+            }
+            ?>
+        </div>
+
         <form id="ssl-testing-form">
-            <input type="submit" id="test-ssl-button" class="button button-primary" value="Test SSL">
+            <?php wp_nonce_field('ssl_testing_nonce', 'ssl_nonce'); ?>
+            <input type="submit" id="test-ssl-button" class="button button-primary" value="<?php echo $cached_result ? 'Retest SSL' : 'Start SSL Test'; ?>">
             <span id="loading-icon" style="display: none; margin-left: 10px;">
                 <i class="fa-solid fa-spinner fa-spin-pulse"></i>
             </span>
@@ -43,6 +53,7 @@ $registered_user = isset($registered_user) ? $registered_user : false;
 
 jQuery(document).ready(function($) {
     // Handle registration
+    var checkStatusInterval;
     $('#ssl-registration-form').on('submit', function(event) {
         event.preventDefault();
 
@@ -79,11 +90,9 @@ jQuery(document).ready(function($) {
     // Handle SSL testing with polling
     $('#ssl-testing-form').on('submit', function(event) {
         event.preventDefault();
-
         $('#test-status').text('Initiating SSL test, please wait...');
         $('#test-ssl-button').prop('disabled', true);
-        $('#loading-icon').show(); // Show the loading icon
-
+        $('#loading-icon').show();
         startSSLTest();
     });
 
@@ -92,28 +101,24 @@ jQuery(document).ready(function($) {
             url: ajaxurl,
             type: 'POST',
             data: {
-                action: 'ssl_testing',
-                nonce: '<?php echo wp_create_nonce('ssl_testing_nonce'); ?>'
+                action: 'start_ssl_test',
+                nonce: $('#ssl_nonce').val()
             },
             success: function(response) {
                 if (response.success) {
-                    if (response.data.status && response.data.status !== 'READY') {
-                        // Test is still in progress, update status and poll again
-                        $('#test-status').html('Status: ' + response.data.status + ' - ' + response.data.message);
-                        setTimeout(startSSLTest, 10000); // Poll again after 10 seconds
-                    } else {
-                        // Test is complete, display results
-                        $('#test-status').html(response.data);
-                        setupSSLTabs(); // Initialize tabs after results are displayed
-                        $('#test-ssl-button').prop('disabled', false);
-                        $('#loading-icon').hide(); // Show the loading icon
-                        
+                    if (response.data.status === 'in_progress') {
+                        $('#test-status').text(response.data.message);
+                        checkStatusInterval = setInterval(checkSSLTestStatus, 60000); // Check every 60 seconds
+                    } else if (response.data.status === 'completed') {
+                        $('#ssl-results').html(response.data.data);
+                        $('#test-status').text('SSL test completed successfully.');
+                        $('#test-ssl-button').prop('disabled', false).val('Retest SSL');
+                        $('#loading-icon').hide();
                     }
                 } else {
-                    $('#test-status').text('Error testing SSL: ' + response.data);
+                    $('#test-status').text('Error starting SSL test: ' + response.data);
                     $('#test-ssl-button').prop('disabled', false);
-                    $('#loading-icon').hide(); // Hide the loading icon
-
+                    $('#loading-icon').hide();
                 }
             },
             error: function() {
@@ -123,6 +128,40 @@ jQuery(document).ready(function($) {
             }
         });
     }
+
+    function checkSSLTestStatus() {
+        $.ajax({
+            url: ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'check_ssl_test_status',
+                nonce: $('#ssl_nonce').val()
+            },
+            success: function(response) {
+                if (response.success) {
+                    if (response.data.status === 'completed') {
+                        clearInterval(checkStatusInterval);
+                        $('#ssl-results').html(response.data.data);
+                        $('#test-status').text('SSL test completed successfully.');
+                        $('#test-ssl-button').prop('disabled', false).val('Retest SSL');
+                        $('#loading-icon').hide();
+                    } else if (response.data.status === 'in_progress') {
+                        $('#test-status').text(response.data.message);
+                    }
+                } else {
+                    clearInterval(checkStatusInterval);
+                    $('#test-status').text('Error checking SSL test status: ' + response.data);
+                    $('#test-ssl-button').prop('disabled', false);
+                    $('#loading-icon').hide();
+                }
+            },
+            error: function() {
+                clearInterval(checkStatusInterval);
+                $('#test-status').text('An error occurred while communicating with the server.');
+                $('#test-ssl-button').prop('disabled', false);
+                $('#loading-icon').hide();
+            }
+        });
 });
 
 function initSSLTabs(containerId) {

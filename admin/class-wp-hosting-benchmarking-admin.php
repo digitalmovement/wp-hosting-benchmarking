@@ -140,7 +140,7 @@ class Wp_Hosting_Benchmarking_Admin {
         );
         wp_localize_script('ssl-testing-script', 'sslTestingData', $script_data);
 
-
+        $cached_result = get_transient($this->transient_key);
         $registered_user = get_option('wp_hosting_benchmarking_registered_user');
         include_once 'partials/wp-hosting-benchmarking-ssl-testing-display.php';
     }
