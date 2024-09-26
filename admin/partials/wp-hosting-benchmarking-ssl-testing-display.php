@@ -136,7 +136,7 @@ function initSSLTabs(containerId) {
             container.find(targetTab).addClass('active');
         });
 
-        $('.ssl-tab-links a').on('click', function(e) {
+       /* $('.ssl-tab-links a').on('click', function(e) {
         e.preventDefault();
         var targetTab = $(this).attr('href');
         console.log("clied");
@@ -148,8 +148,8 @@ function initSSLTabs(containerId) {
         // Add active class to current tab and content
         $(this).parent('li').addClass('active');
         $(targetTab).addClass('active');
-    });
-
+        });
+*/
 
     });
 }
