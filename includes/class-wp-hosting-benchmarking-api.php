@@ -35,4 +35,27 @@ class Wp_Hosting_Benchmarking_API {
         }
         return round(($end_time - $start_time) * 1000, 1); // Convert to milliseconds and round to 1 decimal place
     }
+
+    public function test_ssl_certificate($domain) {
+        $api_url = 'https://api.ssllabs.com/api/v3/analyze?host=' . parse_url($domain, PHP_URL_HOST);
+
+        // Make the API request
+        $response = wp_remote_get($api_url);
+
+        if (is_wp_error($response)) {
+            return false;
+        }
+
+        $body = wp_remote_retrieve_body($response);
+        $data = json_decode($body);
+
+        // Check if the response contains an SSL grade
+        if ($data && isset($data->endpoints[0]->grade)) {
+            return 'SSL Test Grade: ' . $data->endpoints[0]->grade;
+        }
+
+        return false;
+    }
+
+    
 }
