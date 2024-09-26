@@ -140,8 +140,7 @@ class Wp_Hosting_Benchmarking_SSL_Testing {
     // Add the format_ssl_test_results function here
     function format_ssl_test_results($result) {
 
-        $output = '<div class="ssl-test-results">';
-        
+  
         $output .= '<pre>--';
 
         $output .= print_r($result,true); 
@@ -215,7 +214,7 @@ class Wp_Hosting_Benchmarking_SSL_Testing {
     
         $output .= '</div>'; // End ssl-test-results
 
-        $output .= '</div>';
+     
         return $output;
     }
 
