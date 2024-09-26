@@ -172,12 +172,21 @@ class Wp_Hosting_Benchmarking_SSL_Testing {
     
     function format_cipher_suites($suites) {
         $output = '<h3><i class="fas fa-lock"></i> Cipher Suites</h3>';
-        $output .= '<ul>';
-        foreach ($suites as $suite) {
-            $icon = ($suite['q'] == 1) ? '<i class="fas fa-times-circle" style="color: red;"></i>' : '<i class="fas fa-check-circle" style="color: green;"></i>';
-            $output .= '<li>' . $icon . ' ' . esc_html($suite['name']) . '</li>';
-        }
-        $output .= '</ul>';
+            foreach ($suites as $protocol_suite) {
+                $protocol = isset($protocol_suite['protocol']) ? 'TLS ' . number_format($protocol_suite['protocol'] / 256, 1) : 'Unknown Protocol';
+                $output .= '<h4>' . esc_html($protocol) . '</h4>';
+                $output .= '<ul>';
+                
+                if (isset($protocol_suite['list']) && is_array($protocol_suite['list'])) {
+                    foreach ($protocol_suite['list'] as $suite) {
+                        $icon = (isset($suite['q']) && $suite['q'] == 1) ? '<i class="fas fa-times-circle" style="color: red;"></i>' : '<i class="fas fa-check-circle" style="color: green;"></i>';
+                        $strength = isset($suite['cipherStrength']) ? ' (' . $suite['cipherStrength'] . '-bit)' : '';
+                        $output .= '<li>' . $icon . ' ' . esc_html($suite['name']) . esc_html($strength) . '</li>';
+                    }
+                }
+                
+                $output .= '</ul>';
+            }
         return $output;
     }
     
