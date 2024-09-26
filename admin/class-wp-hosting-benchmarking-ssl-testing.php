@@ -134,7 +134,7 @@ class Wp_Hosting_Benchmarking_SSL_Testing {
                    $output .= '<li>' . $icon . ' ' . esc_html($suite['name']) . '</li>';
                }
         $output .= '</ul>';
-        $output .= format_ssl_simulations($result['endpoints'][0]['details']['sims']);
+        $output .= $this->format_ssl_simulations($result['endpoints'][0]['details']['sims']);
 
         // Vulnerabilities
         $output .= '<h3><i class="fas fa-bug"></i> Vulnerabilities</h3>';
@@ -186,7 +186,7 @@ class Wp_Hosting_Benchmarking_SSL_Testing {
         return $output;
     }
 
-    
+
 } // end of class
 
 
