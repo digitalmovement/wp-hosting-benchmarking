@@ -151,55 +151,50 @@ class Wp_Hosting_Benchmarking_SSL_Testing {
 
     function format_certificate_info($cert) {
         $output = '<h3><i class="fas fa-certificate"></i> Certificate Information</h3>';
-        $output .= '<ul>';
-        $output .= '<li><i class="fas fa-user"></i> Subject: ' . esc_html($cert['subject']) . '</li>';
-        $output .= '<li><i class="fas fa-stamp"></i> Issuer: ' . esc_html($cert['issuerSubject']) . '</li>';
-        $output .= '<li><i class="fas fa-calendar-plus"></i> Valid from: ' . date('Y-m-d', $cert['notBefore']/1000) . '</li>';
-        $output .= '<li><i class="fas fa-calendar-times"></i> Valid until: ' . date('Y-m-d', $cert['notAfter']/1000) . '</li>';
-        $output .= '</ul>';
-
-
-        $output .= '<ul>';
-        $output .= '<li><strong>Subject:</strong> ' . esc_html($cert['subject']) . '</li>';
-        $output .= '<li><strong>Fingerprint SHA256:</strong> ' . esc_html($cert['sha256Hash']) . '</li>';
-        $output .= '<li><strong>Pin SHA256:</strong> ' . esc_html($cert['pinSha256']) . '</li>';
-        $output .= '<li><strong>Common names:</strong> ' . esc_html(implode(', ', $cert['commonNames'])) . '</li>';
-        $output .= '<li><strong>Alternative names:</strong> ' . esc_html(implode(', ', $cert['altNames'])) . '</li>';
-        $output .= '<li><strong>Serial Number:</strong> ' . esc_html($cert['serialNumber']) . '</li>';
-        $output .= '<li><strong>Valid from:</strong> ' . date('D, d M Y H:i:s T', $cert['notBefore'] / 1000) . '</li>';
-        $output .= '<li><strong>Valid until:</strong> ' . date('D, d M Y H:i:s T', $cert['notAfter'] / 1000) . ' (expires in ' . $this->format_expiry_time($cert['notAfter']) . ')</li>';
-        $output .= '<li><strong>Key:</strong> ' . esc_html($cert['keyAlg']) . ' ' . $cert['keySize'] . ' bits (e ' . $cert['keyStrength'] . ')</li>';
-        $output .= '<li><strong>Weak key (Debian):</strong> ' . ($cert['weakDebianKey'] ? 'Yes' : 'No') . '</li>';
-        $output .= '<li><strong>Issuer:</strong> ' . esc_html($cert['issuerSubject']) . '</li>';
-        $output .= '<li><strong>Signature algorithm:</strong> ' . esc_html($cert['sigAlg']) . '</li>';
-        $output .= '<li><strong>Extended Validation:</strong> ' . ($cert['validationType'] === 'EV' ? 'Yes' : 'No') . '</li>';
-        $output .= '<li><strong>Certificate Transparency:</strong> ' . ($cert['sct'] ? 'Yes' : 'No') . '</li>';
-        $output .= '<li><strong>OCSP Must Staple:</strong> ' . ($cert['mustStaple'] ? 'Yes' : 'No') . '</li>';
-
-
-        $output .= '<li><strong>Revocation information:</strong> ';
+        $output .= '<table class="wp-list-table widefat fixed striped">';
+        $output .= '<tbody>';
+    
+        $add_row = function($label, $value) use (&$output) {
+            $output .= '<tr>';
+            $output .= '<th scope="row">' . esc_html($label) . '</th>';
+            $output .= '<td>' . $value . '</td>';
+            $output .= '</tr>';
+        };
+    
+        $add_row('Subject', esc_html($cert['subject']));
+        $add_row('Fingerprint SHA256', esc_html($cert['sha256Hash']));
+        $add_row('Pin SHA256', esc_html($cert['pinSha256']));
+        $add_row('Common names', esc_html(implode(', ', $cert['commonNames'])));
+        $add_row('Alternative names', esc_html(implode(', ', $cert['altNames'])));
+        $add_row('Serial Number', esc_html($cert['serialNumber']));
+        $add_row('Valid from', date('D, d M Y H:i:s T', $cert['notBefore'] / 1000));
+        $add_row('Valid until', date('D, d M Y H:i:s T', $cert['notAfter'] / 1000) . ' (expires in ' . $this->format_expiry_time($cert['notAfter']) . ')');
+        $add_row('Key', esc_html($cert['keyAlg']) . ' ' . $cert['keySize'] . ' bits (e ' . $cert['keyStrength'] . ')');
+        $add_row('Weak key (Debian)', $cert['weakDebianKey'] ? 'Yes' : 'No');
+        $add_row('Issuer', esc_html($cert['issuerSubject']));
+        $add_row('Signature algorithm', esc_html($cert['sigAlg']));
+        $add_row('Extended Validation', $cert['validationType'] === 'EV' ? 'Yes' : 'No');
+        $add_row('Certificate Transparency', $cert['sct'] ? 'Yes' : 'No');
+        $add_row('OCSP Must Staple', $cert['mustStaple'] ? 'Yes' : 'No');
+    
+        // Revocation information
+        $revocation_info = 'Not available';
         if (isset($cert['revocationInfo'])) {
             if (is_array($cert['revocationInfo'])) {
-                $output .= esc_html(implode(', ', $cert['revocationInfo']));
+                $revocation_info = esc_html(implode(', ', $cert['revocationInfo']));
             } else {
-                $output .= esc_html($cert['revocationInfo']);
+                $revocation_info = esc_html($cert['revocationInfo']);
             }
-        } else {
-            $output .= 'Not available';
         }
-        $output .= '</li>';
+        $add_row('Revocation information', $revocation_info);
     
-        // Handle revocation status
-        $output .= '<li><strong>Revocation status:</strong> ';
-        $output .= isset($cert['revocationStatus']) ? esc_html($cert['revocationStatus']) : 'Not available';
-        $output .= '</li>';
-
-        
-        $output .= '<li><strong>DNS CAA:</strong> ' . ($result['endpoints'][0]['details']['hasDnsCaa'] ? 'Yes' : 'No') . '</li>';
-   
-
-
-
+        // Revocation status
+        $revocation_status = isset($cert['revocationStatus']) ? esc_html($cert['revocationStatus']) : 'Not available';
+        $add_row('Revocation status', $revocation_status);
+    
+        $output .= '</tbody>';
+        $output .= '</table>';
+    
         return $output;
     }
     
@@ -435,9 +430,6 @@ class Wp_Hosting_Benchmarking_SSL_Testing {
         }
     
         $output .= '</ul>';
-    
-        $output .= '<h3><i class="fas fa-certificate"></i> Certificate Details</h3>';
-          $output .= '</ul>';
     
         return $output;
     }
