@@ -119,6 +119,7 @@ jQuery(document).ready(function($) {
                     $('#test-status').text('Error starting SSL test: ' + response.data);
                     $('#test-ssl-button').prop('disabled', false);
                     $('#loading-icon').hide();
+                    setupSSLTabs(); // Initialize tabs after results are displayed
                 }
             },
             error: function() {
