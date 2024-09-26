@@ -3,6 +3,7 @@
 
 $current_user = wp_get_current_user();
 $user_email = $current_user->user_email;
+$registered_user = isset($registered_user) ? $registered_user : false;
 
 ?>
 

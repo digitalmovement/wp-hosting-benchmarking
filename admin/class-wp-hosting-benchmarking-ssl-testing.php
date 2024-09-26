@@ -13,7 +13,7 @@ class Wp_Hosting_Benchmarking_SSL_Testing {
 
     // Display the SSL testing page
        // Display the SSL testing or registration page
-       public function display_ssl_testing_page() {
+    public function display_ssl_testing_page() {
         // Check if the user is already registered
         $registered_user = get_option('wp_hosting_benchmarking_registered_user');
 
