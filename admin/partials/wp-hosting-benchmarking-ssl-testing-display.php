@@ -4,8 +4,6 @@
 $current_user = wp_get_current_user();
 $user_email = $current_user->user_email;
 $registered_user = isset($registered_user) ? $registered_user : false;
-$cached_result = get_transient($ssl_testing->transient_key);
-$cached_result = get_transient('wp_hosting_benchmarking_ssl_results');
 ?>
 <div class="wrap">
     <h1>SSL Testing</h1>
