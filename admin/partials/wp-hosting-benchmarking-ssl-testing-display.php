@@ -106,7 +106,7 @@ jQuery(document).ready(function($) {
                         $('#test-status').html(response.data);
                         setupSSLTabs(); // Initialize tabs after results are displayed
                         $('#test-ssl-button').prop('disabled', false);
-                        $('#loading-icon').show(); // Show the loading icon
+                        $('#loading-icon').hide(); // Show the loading icon
                         
                     }
                 } else {
