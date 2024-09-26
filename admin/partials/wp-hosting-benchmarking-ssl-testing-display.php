@@ -31,10 +31,7 @@ $registered_user = isset($registered_user) ? $registered_user : false;
             <?php 
             if ($cached_result) {
                 echo $ssl_testing->format_ssl_test_results($cached_result);
-                echo "check";
             } 
-            
-
             ?>
         </div>
 
@@ -55,51 +52,45 @@ $registered_user = isset($registered_user) ? $registered_user : false;
 jQuery(document).ready(function($) {
     // Handle registration
     var checkStatusInterval;
-    $('#ssl-testing-form').on('submit', function(event) {
-        event.preventDefault();
-        $('#test-status').text('Initiating SSL test, please wait...');
-        $('#test-ssl-button').prop('disabled', true);
-        $('#loading-icon').show();
-        startSSLTest();
-    });
+  
 
     function startSSLTest() {
-        $.ajax({
+        jQuery.ajax({
             url: ajaxurl,
             type: 'POST',
             data: {
                 action: 'start_ssl_test',
-                nonce: $('#ssl_nonce').val()
+                nonce: jQuery('#ssl_nonce').val()
             },
             success: function(response) {
                 if (response.success) {
                     if (response.data.status === 'in_progress') {
-                        $('#test-status').text(response.data.message);
+                        jQuery('#test-status').text(response.data.message);
                         checkStatusInterval = setInterval(checkSSLTestStatus, 60000); // Check every 60 seconds
                     } else if (response.data.status === 'completed') {
                         displaySSLResults(response.data.data);
                     }
                 } else {
-                    $('#test-status').text('Error starting SSL test: ' + response.data);
-                    $('#test-ssl-button').prop('disabled', false);
-                    $('#loading-icon').hide();
+                    jQuery('#test-status').text('Error starting SSL test: ' + response.data);
+                    jQuery('#test-ssl-button').prop('disabled', false);
+                    jQuery('#loading-icon').hide();
                 }
             },
             error: function() {
-                $('#test-status').text('An error occurred while communicating with the server.');
-                $('#test-ssl-button').prop('disabled', false);
-                $('#loading-icon').hide();
+                jQuery('#test-status').text('An error occurred while communicating with the server.');
+                jQuery('#test-ssl-button').prop('disabled', false);
+                jQuery('#loading-icon').hide();
             }
         });
     }
 
     function checkSSLTestStatus() {
-        $.ajax({
+        jQuery.ajax({
             url: ajaxurl,
             type: 'POST',
             data: {
                 action: 'check_ssl_test_status',
-                nonce: $('#ssl_nonce').val()
+                nonce: jQuery('#ssl_nonce').val()
             },
             success: function(response) {
                 if (response.success) {
@@ -107,30 +98,30 @@ jQuery(document).ready(function($) {
                         clearInterval(checkStatusInterval);
                         displaySSLResults(response.data.data);
                     } else if (response.data.status === 'in_progress') {
-                        $('#test-status').text(response.data.message);
+                        jQuery('#test-status').text(response.data.message);
                     }
                 } else {
                     clearInterval(checkStatusInterval);
-                    $('#test-status').text('Error checking SSL test status: ' + response.data);
-                    $('#test-ssl-button').prop('disabled', false);
-                    $('#loading-icon').hide();
+                    jQuery('#test-status').text('Error checking SSL test status: ' + response.data);
+                    jQuery('#test-ssl-button').prop('disabled', false);
+                    jQuery('#loading-icon').hide();
                 }
             },
             error: function() {
                 clearInterval(checkStatusInterval);
-                $('#test-status').text('An error occurred while communicating with the server.');
-                $('#test-ssl-button').prop('disabled', false);
-                $('#loading-icon').hide();
+                jQuery('#test-status').text('An error occurred while communicating with the server.');
+                jQuery('#test-ssl-button').prop('disabled', false);
+                jQuery('#loading-icon').hide();
             }
         });
     }
 
 
-function displaySSLResults(data) {
-        $('#ssl-results').html(data);
-        $('#test-status').text('SSL test completed successfully.');
-        $('#test-ssl-button').prop('disabled', false).val('Retest SSL');
-        $('#loading-icon').hide();
+    function displaySSLResults(data) {
+        jQuery('#ssl-results').html(data);
+        jQuery('#test-status').text('SSL test completed successfully.');
+        jQuery('#test-ssl-button').prop('disabled', false).val('Retest SSL');
+        jQuery('#loading-icon').hide();
         setupSSLTabs();
     }
 
@@ -176,19 +167,18 @@ function displaySSLResults(data) {
         }
     }
 
-    function setupSSLTabs() {
-        const sslResultsContainer = document.querySelector('.ssl-test-results');
-        if (sslResultsContainer) {
-            initSSLTabs(sslResultsContainer.id);
-            console.log("SSL Tabs initialized for container: " + sslResultsContainer.id);
-        } else {
-            console.log("SSL Results container not found");
-        }
-    }
-});
 
-// Initialize tabs on page load if results are already present
-jQuery(document).ready(function($) {
+    jQuery(document).ready(function($) {
+    // Handle SSL testing form submission
+    $('#ssl-testing-form').on('submit', function(event) {
+        event.preventDefault();
+        $('#test-status').text('Initiating SSL test, please wait...');
+        $('#test-ssl-button').prop('disabled', true);
+        $('#loading-icon').show();
+        startSSLTest();
+    });
+
+    // Initialize tabs on page load if results are already present
     if ($('.ssl-test-results').length > 0) {
         setupSSLTabs();
     }
