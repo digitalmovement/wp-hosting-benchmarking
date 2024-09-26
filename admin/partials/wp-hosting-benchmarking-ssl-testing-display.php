@@ -162,6 +162,7 @@ jQuery(document).ready(function($) {
                 $('#loading-icon').hide();
             }
         });
+    }
 });
 
 function initSSLTabs(containerId) {
