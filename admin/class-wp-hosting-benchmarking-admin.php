@@ -132,6 +132,8 @@ class Wp_Hosting_Benchmarking_Admin {
     }
 
     public function display_ssl_testing_page() {
+        
+        $registered_user = get_option('wp_hosting_benchmarking_registered_user');
         include_once 'partials/wp-hosting-benchmarking-ssl-testing-display.php';
     }
 
