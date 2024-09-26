@@ -64,8 +64,10 @@ class Wp_Hosting_Benchmarking_Admin {
         wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', array(), null, true);
         wp_enqueue_script('luxon', 'https://cdn.jsdelivr.net/npm/luxon/build/global/luxon.min.js', array(), null, true);
         wp_enqueue_script('chartjs-adapter-luxon', 'https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon', array('chart-js'), null, true);
-        wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/wp-hosting-benchmarking-admin.js', array('jquery'), $this->version, false);
 
+        wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/wp-hosting-benchmarking-admin.js', array('jquery'), $this->version, false);
+        wp_enqueue_style('font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css');
+        
         // Localize script after enqueuing
         wp_localize_script($this->plugin_name, 'wpHostingBenchmarking', array(
             'ajax_url' => admin_url('admin-ajax.php'),
@@ -138,7 +140,7 @@ class Wp_Hosting_Benchmarking_Admin {
         );
         wp_localize_script('ssl-testing-script', 'sslTestingData', $script_data);
 
-        
+
         $registered_user = get_option('wp_hosting_benchmarking_registered_user');
         include_once 'partials/wp-hosting-benchmarking-ssl-testing-display.php';
     }

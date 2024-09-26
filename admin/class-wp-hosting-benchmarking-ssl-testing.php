@@ -90,37 +90,37 @@ class Wp_Hosting_Benchmarking_SSL_Testing {
         // Overall Rating
         $grade = $result['endpoints'][0]['grade'];
         $grade_color = ($grade === 'A' || $grade === 'A+') ? 'green' : (($grade === 'B') ? 'orange' : 'red');
-        $output .= '<h2>Overall Rating: <span style="color: ' . $grade_color . ';">' . $grade . '</span></h2>';
+        $output .= '<h2><i class="fas fa-award" style="color: ' . $grade_color . ';"></i> Overall Rating: <span style="color: ' . $grade_color . ';">' . $grade . '</span></h2>';
     
         // Certificate Information
         $cert = $result['certs'][0];
-        $output .= '<h3><img src="' . plugins_url('assets/icon-certificate.png', __FILE__) . '" alt="Certificate" width="20" height="20"> Certificate Information</h3>';
+        $output .= '<h3><i class="fas fa-certificate"></i> Certificate Information</h3>';
         $output .= '<ul>';
-        $output .= '<li>Subject: ' . esc_html($cert['subject']) . '</li>';
-        $output .= '<li>Issuer: ' . esc_html($cert['issuerSubject']) . '</li>';
-        $output .= '<li>Valid from: ' . date('Y-m-d', $cert['notBefore']/1000) . '</li>';
-        $output .= '<li>Valid until: ' . date('Y-m-d', $cert['notAfter']/1000) . '</li>';
+        $output .= '<li><i class="fas fa-user"></i> Subject: ' . esc_html($cert['subject']) . '</li>';
+        $output .= '<li><i class="fas fa-stamp"></i> Issuer: ' . esc_html($cert['issuerSubject']) . '</li>';
+        $output .= '<li><i class="fas fa-calendar-plus"></i> Valid from: ' . date('Y-m-d', $cert['notBefore']/1000) . '</li>';
+        $output .= '<li><i class="fas fa-calendar-times"></i> Valid until: ' . date('Y-m-d', $cert['notAfter']/1000) . '</li>';
         $output .= '</ul>';
     
         // Protocols
-        $output .= '<h3><img src="' . plugins_url('assets/icon-protocol.png', __FILE__) . '" alt="Protocols" width="20" height="20"> Supported Protocols</h3>';
+        $output .= '<h3><i class="fas fa-exchange-alt"></i> Supported Protocols</h3>';
         $output .= '<ul>';
         foreach ($result['endpoints'][0]['details']['protocols'] as $protocol) {
-            $output .= '<li>' . esc_html($protocol['name'] . ' ' . $protocol['version']) . '</li>';
+            $output .= '<li><i class="fas fa-check-circle"></i> ' . esc_html($protocol['name'] . ' ' . $protocol['version']) . '</li>';
         }
         $output .= '</ul>';
     
         // Cipher Suites
-        $output .= '<h3><img src="' . plugins_url('assets/icon-cipher.png', __FILE__) . '" alt="Cipher Suites" width="20" height="20"> Cipher Suites</h3>';
+        $output .= '<h3><i class="fas fa-lock"></i> Cipher Suites</h3>';
         $output .= '<ul>';
         foreach ($result['endpoints'][0]['details']['suites']['list'] as $suite) {
-            $color = ($suite['q'] == 1) ? 'red' : 'green';
-            $output .= '<li style="color: ' . $color . ';">' . esc_html($suite['name']) . '</li>';
+            $icon = ($suite['q'] == 1) ? '<i class="fas fa-times-circle" style="color: red;"></i>' : '<i class="fas fa-check-circle" style="color: green;"></i>';
+            $output .= '<li>' . $icon . ' ' . esc_html($suite['name']) . '</li>';
         }
         $output .= '</ul>';
     
         // Vulnerabilities
-        $output .= '<h3><img src="' . plugins_url('assets/icon-vulnerability.png', __FILE__) . '" alt="Vulnerabilities" width="20" height="20"> Vulnerabilities</h3>';
+        $output .= '<h3><i class="fas fa-bug"></i> Vulnerabilities</h3>';
         $output .= '<ul>';
         $vulnerabilities = [
             'heartbleed' => 'Heartbleed',
@@ -130,9 +130,9 @@ class Wp_Hosting_Benchmarking_SSL_Testing {
         ];
         foreach ($vulnerabilities as $key => $name) {
             $vulnerable = $result['endpoints'][0]['details'][$key];
-            $color = $vulnerable ? 'red' : 'green';
+            $icon = $vulnerable ? '<i class="fas fa-exclamation-triangle" style="color: red;"></i>' : '<i class="fas fa-shield-alt" style="color: green;"></i>';
             $status = $vulnerable ? 'Vulnerable' : 'Not Vulnerable';
-            $output .= '<li>' . esc_html($name) . ': <span style="color: ' . $color . ';">' . $status . '</span></li>';
+            $output .= '<li>' . $icon . ' ' . esc_html($name) . ': ' . $status . '</li>';
         }
         $output .= '</ul>';
     
