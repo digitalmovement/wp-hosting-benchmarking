@@ -232,7 +232,8 @@ class Wp_Hosting_Benchmarking_SSL_Testing {
         // Start tabs
         $output .= '<div class="ssl-tabs">';
         $output .= '<ul class="ssl-tab-links">';
-        $output .= '<li class="active"><a href="#tab-cert">Certificate</a></li>';
+        $output .= '<li class="active"><a href="#tab-root-stores">Root Stores</a></li>';
+        $output .= '<li><a href="#tab-cert">Certificate</a></li>';
         $output .= '<li><a href="#tab-protocols">Protocols</a></li>';
         $output .= '<li><a href="#tab-ciphers">Cipher Suites</a></li>';
         $output .= '<li><a href="#tab-handshake">Handshake Simulation</a></li>';
@@ -243,9 +244,14 @@ class Wp_Hosting_Benchmarking_SSL_Testing {
     
     
         $output .= '<div class="ssl-tab-content">';
-    
+       // Root Stores and Certificate Details
+       $output .= '<div id="tab-root-stores" class="ssl-tab active">';
+       $output .= $this->format_root_stores_and_cert_details($result);
+       $output .= '</div>';
+
+
         // Certificate Information
-        $output .= '<div id="tab-cert" class="ssl-tab active">';
+        $output .= '<div id="tab-cert" class="ssl-tab">';
         $output .= $this->format_certificate_info($result['certs'][0]);
         $output .= '</div>';
     
@@ -364,7 +370,70 @@ class Wp_Hosting_Benchmarking_SSL_Testing {
         return $output;
     }
 
-
+    private function format_root_stores_and_cert_details($result) {
+        $output = '<h3><i class="fas fa-shield-alt"></i> Trusted Root Stores</h3>';
+        $output .= '<ul>';
+    
+        $trustPaths = $result['endpoints'][0]['details']['certChains'][0]['trustPaths'];
+        $rootStores = ['Mozilla', 'Apple', 'Android', 'Java', 'Windows'];
+    
+        foreach ($rootStores as $store) {
+            $trusted = false;
+            foreach ($trustPaths as $path) {
+                foreach ($path['trust'] as $trust) {
+                    if ($trust['rootStore'] === $store && $trust['isTrusted']) {
+                        $trusted = true;
+                        break 2;
+                    }
+                }
+            }
+            $icon = $trusted ? '<i class="fas fa-check-circle" style="color: green;"></i>' : '<i class="fas fa-times-circle" style="color: red;"></i>';
+            $output .= '<li>' . $icon . ' ' . esc_html($store) . '</li>';
+        }
+    
+        $output .= '</ul>';
+    
+        $output .= '<h3><i class="fas fa-certificate"></i> Certificate Details</h3>';
+        $cert = $result['certs'][0];
+        $output .= '<ul>';
+        $output .= '<li><strong>Subject:</strong> ' . esc_html($cert['subject']) . '</li>';
+        $output .= '<li><strong>Fingerprint SHA256:</strong> ' . esc_html($cert['sha256Hash']) . '</li>';
+        $output .= '<li><strong>Pin SHA256:</strong> ' . esc_html($cert['pinSha256']) . '</li>';
+        $output .= '<li><strong>Common names:</strong> ' . esc_html(implode(', ', $cert['commonNames'])) . '</li>';
+        $output .= '<li><strong>Alternative names:</strong> ' . esc_html(implode(', ', $cert['altNames'])) . '</li>';
+        $output .= '<li><strong>Serial Number:</strong> ' . esc_html($cert['serialNumber']) . '</li>';
+        $output .= '<li><strong>Valid from:</strong> ' . date('D, d M Y H:i:s T', $cert['notBefore'] / 1000) . '</li>';
+        $output .= '<li><strong>Valid until:</strong> ' . date('D, d M Y H:i:s T', $cert['notAfter'] / 1000) . ' (expires in ' . $this->format_expiry_time($cert['notAfter']) . ')</li>';
+        $output .= '<li><strong>Key:</strong> ' . esc_html($cert['keyAlg']) . ' ' . $cert['keySize'] . ' bits (e ' . $cert['keyStrength'] . ')</li>';
+        $output .= '<li><strong>Weak key (Debian):</strong> ' . ($cert['weakDebianKey'] ? 'Yes' : 'No') . '</li>';
+        $output .= '<li><strong>Issuer:</strong> ' . esc_html($cert['issuerSubject']) . '</li>';
+        $output .= '<li><strong>Signature algorithm:</strong> ' . esc_html($cert['sigAlg']) . '</li>';
+        $output .= '<li><strong>Extended Validation:</strong> ' . ($cert['validationType'] === 'EV' ? 'Yes' : 'No') . '</li>';
+        $output .= '<li><strong>Certificate Transparency:</strong> ' . ($cert['sct'] ? 'Yes' : 'No') . '</li>';
+        $output .= '<li><strong>OCSP Must Staple:</strong> ' . ($cert['mustStaple'] ? 'Yes' : 'No') . '</li>';
+        $output .= '<li><strong>Revocation information:</strong> ' . esc_html(implode(', ', $cert['revocationInfo'])) . '</li>';
+        $output .= '<li><strong>Revocation status:</strong> ' . esc_html($cert['revocationStatus']) . '</li>';
+        $output .= '<li><strong>DNS CAA:</strong> ' . ($result['endpoints'][0]['details']['hasDnsCaa'] ? 'Yes' : 'No') . '</li>';
+        $output .= '</ul>';
+    
+        return $output;
+    }
+    
+    private function format_expiry_time($timestamp) {
+        $now = time();
+        $expiry = $timestamp / 1000; // Convert milliseconds to seconds
+        $diff = $expiry - $now;
+    
+        $days = floor($diff / (60 * 60 * 24));
+        $months = floor($days / 30);
+        $days %= 30;
+    
+        if ($months > 0) {
+            return "$months month" . ($months > 1 ? "s" : "") . " and $days day" . ($days > 1 ? "s" : "");
+        } else {
+            return "$days day" . ($days > 1 ? "s" : "");
+        }
+    }
 
 } // end of class
 
