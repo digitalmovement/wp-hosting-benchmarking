@@ -132,6 +132,12 @@ class Wp_Hosting_Benchmarking_Admin {
     }
 
     public function display_ssl_testing_page() {
+        $script_data = array(
+            'registrationNonce' => wp_create_nonce('ssl_registration_nonce'),
+            'testingNonce'      => wp_create_nonce('ssl_testing_nonce'),
+        );
+        wp_localize_script('ssl-testing-script', 'sslTestingData', $script_data);
+
         
         $registered_user = get_option('wp_hosting_benchmarking_registered_user');
         include_once 'partials/wp-hosting-benchmarking-ssl-testing-display.php';

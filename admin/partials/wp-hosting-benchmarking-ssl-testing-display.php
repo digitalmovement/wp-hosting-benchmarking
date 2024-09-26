@@ -36,6 +36,7 @@ $registered_user = isset($registered_user) ? $registered_user : false;
 </div>
 
 <script>
+
 jQuery(document).ready(function($) {
     // Handle registration
     $('#ssl-registration-form').on('submit', function(event) {
@@ -59,7 +60,7 @@ jQuery(document).ready(function($) {
             data: {
                 action: 'ssl_registration',
                 form_data: formData,
-                nonce: '<?php echo wp_create_nonce('ssl_registration_nonce'); ?>'
+                nonce: sslTestingData.registrationNonce
             },
             success: function(response) {
                 if (response.success) {
@@ -71,7 +72,7 @@ jQuery(document).ready(function($) {
         });
     });
 
-    // Handle SSL testing
+    // Handle SSL testing with polling
     $('#ssl-testing-form').on('submit', function(event) {
         event.preventDefault();
 
@@ -87,7 +88,7 @@ jQuery(document).ready(function($) {
             type: 'POST',
             data: {
                 action: 'ssl_testing',
-                nonce: '<?php echo wp_create_nonce('ssl_testing_nonce'); ?>'
+                nonce: sslTestingData.testingNonce
             },
             success: function(response) {
                 if (response.success) {
@@ -111,4 +112,5 @@ jQuery(document).ready(function($) {
             }
         });
     }
+});
 </script>
