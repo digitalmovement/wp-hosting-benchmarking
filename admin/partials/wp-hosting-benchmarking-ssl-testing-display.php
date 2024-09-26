@@ -139,6 +139,7 @@ function initSSLTabs(containerId) {
         $('.ssl-tab-links a').on('click', function(e) {
         e.preventDefault();
         var targetTab = $(this).attr('href');
+        console.log("clied");
 
         // Remove active class from all tabs and contents
         $('.ssl-tab-links li').removeClass('active');
@@ -149,7 +150,7 @@ function initSSLTabs(containerId) {
         $(targetTab).addClass('active');
     });
 
-    
+
     });
 }
 
