@@ -82,6 +82,20 @@ jQuery(document).ready(function($) {
         startSSLTest();
     });
 
+    $('.ssl-tab-links a').on('click', function(e) {
+        e.preventDefault();
+        var targetTab = $(this).attr('href');
+
+        // Remove active class from all tabs and contents
+        $('.ssl-tab-links li').removeClass('active');
+        $('.ssl-tab').removeClass('active');
+
+        // Add active class to current tab and content
+        $(this).parent('li').addClass('active');
+        $(targetTab).addClass('active');
+    });
+
+    
     function startSSLTest() {
         $.ajax({
             url: ajaxurl,
@@ -112,5 +126,7 @@ jQuery(document).ready(function($) {
             }
         });
     }
+
+    
 });
 </script>

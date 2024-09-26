@@ -83,6 +83,60 @@ class Wp_Hosting_Benchmarking_SSL_Testing {
 
     }
 
+    function format_certificate_info($cert) {
+        $output = '<h3><i class="fas fa-certificate"></i> Certificate Information</h3>';
+        $output .= '<ul>';
+        $output .= '<li><i class="fas fa-user"></i> Subject: ' . esc_html($cert['subject']) . '</li>';
+        $output .= '<li><i class="fas fa-stamp"></i> Issuer: ' . esc_html($cert['issuerSubject']) . '</li>';
+        $output .= '<li><i class="fas fa-calendar-plus"></i> Valid from: ' . date('Y-m-d', $cert['notBefore']/1000) . '</li>';
+        $output .= '<li><i class="fas fa-calendar-times"></i> Valid until: ' . date('Y-m-d', $cert['notAfter']/1000) . '</li>';
+        $output .= '</ul>';
+        return $output;
+    }
+    
+    function format_protocols($protocols) {
+        $output = '<h3><i class="fas fa-exchange-alt"></i> Supported Protocols</h3>';
+        $output .= '<ul>';
+        foreach ($protocols as $protocol) {
+            $output .= '<li><i class="fas fa-check-circle"></i> ' . esc_html($protocol['name'] . ' ' . $protocol['version']) . '</li>';
+        }
+        $output .= '</ul>';
+        return $output;
+    }
+    
+    function format_cipher_suites($suites) {
+        $output = '<h3><i class="fas fa-lock"></i> Cipher Suites</h3>';
+        $output .= '<ul>';
+        foreach ($suites as $suite) {
+            $icon = ($suite['q'] == 1) ? '<i class="fas fa-times-circle" style="color: red;"></i>' : '<i class="fas fa-check-circle" style="color: green;"></i>';
+            $output .= '<li>' . $icon . ' ' . esc_html($suite['name']) . '</li>';
+        }
+        $output .= '</ul>';
+        return $output;
+    }
+    
+    function format_vulnerabilities($details) {
+        $output = '<h3><i class="fas fa-bug"></i> Vulnerabilities</h3>';
+        $output .= '<ul>';
+        $vulnerabilities = [
+            'heartbleed' => 'Heartbleed',
+            'poodle' => 'POODLE',
+            'freak' => 'FREAK',
+            'logjam' => 'Logjam'
+        ];
+        foreach ($vulnerabilities as $key => $name) {
+            $vulnerable = $details[$key];
+            $icon = $vulnerable ? '<i class="fas fa-exclamation-triangle" style="color: red;"></i>' : '<i class="fas fa-shield-alt" style="color: green;"></i>';
+            $status = $vulnerable ? 'Vulnerable' : 'Not Vulnerable';
+            $output .= '<li>' . $icon . ' ' . esc_html($name) . ': ' . $status . '</li>';
+        }
+        $output .= '</ul>';
+        return $output;
+    }
+
+
+    
+
     // Add the format_ssl_test_results function here
     function format_ssl_test_results($result) {
 
@@ -100,62 +154,67 @@ class Wp_Hosting_Benchmarking_SSL_Testing {
         $output .= '<h2><i class="fas fa-award" style="color: ' . $grade_color . ';"></i> Overall Rating: <span style="color: ' . $grade_color . ';">' . $grade . '</span></h2>';
     
         // Certificate Information
-        $cert = $result['certs'][0];
-        $output .= '<h3><i class="fas fa-certificate"></i> Certificate Information</h3>';
-        $output .= '<ul>';
-        $output .= '<li><i class="fas fa-user"></i> Subject: ' . esc_html($cert['subject']) . '</li>';
-        $output .= '<li><i class="fas fa-stamp"></i> Issuer: ' . esc_html($cert['issuerSubject']) . '</li>';
-        $output .= '<li><i class="fas fa-calendar-plus"></i> Valid from: ' . date('Y-m-d', $cert['notBefore']/1000) . '</li>';
-        $output .= '<li><i class="fas fa-calendar-times"></i> Valid until: ' . date('Y-m-d', $cert['notAfter']/1000) . '</li>';
+        $output = '<div class="ssl-test-results">';
+    
+        // Overall Rating (always visible)
+        $grade = $result['endpoints'][0]['grade'];
+        $grade_color = ($grade === 'A' || $grade === 'A+') ? 'green' : (($grade === 'B') ? 'orange' : 'red');
+        $output .= '<h2><i class="fas fa-award" style="color: ' . $grade_color . ';"></i> Overall Rating: <span style="color: ' . $grade_color . ';">' . $grade . '</span></h2>';
+    
+        // Start tabs
+        $output .= '<div class="ssl-tabs">';
+        $output .= '<ul class="ssl-tab-links">';
+        $output .= '<li class="active"><a href="#tab-cert">Certificate</a></li>';
+        $output .= '<li><a href="#tab-protocols">Protocols</a></li>';
+        $output .= '<li><a href="#tab-ciphers">Cipher Suites</a></li>';
+        $output .= '<li><a href="#tab-handshake">Handshake Simulation</a></li>';
+        $output .= '<li><a href="#tab-http">HTTP Request</a></li>';
+        $output .= '<li><a href="#tab-vulnerabilities">Vulnerabilities</a></li>';
+        $output .= '<li><a href="#tab-raw">Raw Data</a></li>';
         $output .= '</ul>';
+    
+        $output .= '<div class="ssl-tab-content">';
+    
+        // Certificate Information
+        $output .= '<div id="tab-cert" class="ssl-tab active">';
+        $output .= $this->format_certificate_info($result['certs'][0]);
+        $output .= '</div>';
     
         // Protocols
-        $output .= '<h3><i class="fas fa-exchange-alt"></i> Supported Protocols</h3>';
-        $output .= '<ul>';
-        foreach ($result['endpoints'][0]['details']['protocols'] as $protocol) {
-            $output .= '<li><i class="fas fa-check-circle"></i> ' . esc_html($protocol['name'] . ' ' . $protocol['version']) . '</li>';
-        }
-        $output .= '</ul>';
+        $output .= '<div id="tab-protocols" class="ssl-tab">';
+        $output .= $this->format_protocols($result['endpoints'][0]['details']['protocols']);
+        $output .= '</div>';
     
         // Cipher Suites
-        $output .= '<h3><i class="fas fa-lock"></i> Cipher Suites</h3>';
-        $output .= '<ul>';
-        foreach ($result['endpoints'][0]['details']['suites']['list'] as $suite) {
-            $icon = ($suite['q'] == 1) ? '<i class="fas fa-times-circle" style="color: red;"></i>' : '<i class="fas fa-check-circle" style="color: green;"></i>';
-            $output .= '<li>' . $icon . ' ' . esc_html($suite['name']) . '</li>';
-        }
-        $output .= '</ul>';
+        $output .= '<div id="tab-ciphers" class="ssl-tab">';
+        $output .= $this->format_cipher_suites($result['endpoints'][0]['details']['suites']['list']);
+        $output .= '</div>';
     
-        // Handshake
-        $output .= '<h3><i class="fas fa-lock"></i> Handshake Simulation</h3>';
-        $output .= '<ul>';
-               foreach ($result['sim'][0]['details']['suites']['list'] as $suite) {
-                   $icon = ($suite['q'] == 1) ? '<i class="fas fa-times-circle" style="color: red;"></i>' : '<i class="fas fa-check-circle" style="color: green;"></i>';
-                   $output .= '<li>' . $icon . ' ' . esc_html($suite['name']) . '</li>';
-               }
-        $output .= '</ul>';
+        // Handshake Simulation
+        $output .= '<div id="tab-handshake" class="ssl-tab">';
         $output .= $this->format_ssl_simulations($result['endpoints'][0]['details']['sims']);
-        // HTTP Request Information
-        $output .= $this->format_http_request_info($result['endpoints'][0]['details']['httpTransactions']);
-
-
-        // Vulnerabilities
-        $output .= '<h3><i class="fas fa-bug"></i> Vulnerabilities</h3>';
-        $output .= '<ul>';
-        $vulnerabilities = [
-            'heartbleed' => 'Heartbleed',
-            'poodle' => 'POODLE',
-            'freak' => 'FREAK',
-            'logjam' => 'Logjam'
-        ];
-        foreach ($vulnerabilities as $key => $name) {
-            $vulnerable = $result['endpoints'][0]['details'][$key];
-            $icon = $vulnerable ? '<i class="fas fa-exclamation-triangle" style="color: red;"></i>' : '<i class="fas fa-shield-alt" style="color: green;"></i>';
-            $status = $vulnerable ? 'Vulnerable' : 'Not Vulnerable';
-            $output .= '<li>' . $icon . ' ' . esc_html($name) . ': ' . $status . '</li>';
-        }
-        $output .= '</ul>';
+        $output .= '</div>';
     
+        // HTTP Request Information
+        $output .= '<div id="tab-http" class="ssl-tab">';
+        $output .= $this->format_http_request_info($result['endpoints'][0]['details']['httpTransactions']);
+        $output .= '</div>';
+    
+        // Vulnerabilities
+        $output .= '<div id="tab-vulnerabilities" class="ssl-tab">';
+        $output .= $this->format_vulnerabilities($result['endpoints'][0]['details']);
+        $output .= '</div>';
+    
+        // Raw Data
+        $output .= '<div id="tab-raw" class="ssl-tab">';
+        $output .= '<pre>' . esc_html(print_r($result, true)) . '</pre>';
+        $output .= '</div>';
+    
+        $output .= '</div>'; // End tab content
+        $output .= '</div>'; // End tabs
+    
+        $output .= '</div>'; // End ssl-test-results
+
         $output .= '</div>';
         return $output;
     }

@@ -142,3 +142,50 @@
 .http-info-table tr:hover {
     background-color: #f5f5f5;
 }
+
+.ssl-tabs {
+    width: 100%;
+    margin-top: 20px;
+}
+
+.ssl-tab-links {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.ssl-tab-links li {
+    display: inline-block;
+    margin-bottom: -1px;
+}
+
+.ssl-tab-links a {
+    display: inline-block;
+    padding: 10px 15px;
+    text-decoration: none;
+    color: #333;
+    border: 1px solid transparent;
+    border-bottom: none;
+}
+
+.ssl-tab-links li.active a {
+    background-color: #fff;
+    border-color: #ddd;
+    border-bottom-color: #fff;
+}
+
+.ssl-tab-content {
+    border: 1px solid #ddd;
+    border-top: none;
+    padding: 15px;
+}
+
+.ssl-tab {
+    display: none;
+}
+
+.ssl-tab.active {
+    display: block;
+}
+
