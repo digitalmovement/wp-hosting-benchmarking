@@ -6,7 +6,6 @@ $user_email = $current_user->user_email;
 $registered_user = isset($registered_user) ? $registered_user : false;
 
 ?>
-
 <div class="wrap">
     <h1>SSL Testing</h1>
 
@@ -74,7 +73,6 @@ jQuery(document).ready(function($) {
 
     // Handle SSL testing
     $('#ssl-testing-form').on('submit', function(event) {
-        $('#ssl-testing-form').on('submit', function(event) {
         event.preventDefault();
 
         $('#test-status').text('Testing SSL, please wait...');
