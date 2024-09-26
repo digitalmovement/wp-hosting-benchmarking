@@ -49,7 +49,6 @@ $registered_user = isset($registered_user) ? $registered_user : false;
 <script>
 
 
-jQuery(document).ready(function($) {
     // Handle registration
     var checkStatusInterval;
   
@@ -168,7 +167,7 @@ jQuery(document).ready(function($) {
     }
 
 
-    jQuery(document).ready(function($) {
+jQuery(document).ready(function($) {
     // Handle SSL testing form submission
     $('#ssl-testing-form').on('submit', function(event) {
         event.preventDefault();
