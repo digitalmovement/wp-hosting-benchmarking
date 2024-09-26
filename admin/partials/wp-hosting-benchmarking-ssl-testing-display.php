@@ -123,7 +123,7 @@ jQuery(document).ready(function($) {
             }
         });
     }
-});
+
 
 function displaySSLResults(data) {
         $('#ssl-results').html(data);
@@ -184,6 +184,7 @@ function displaySSLResults(data) {
             console.log("SSL Results container not found");
         }
     }
+});
 
 // Initialize tabs on page load if results are already present
 jQuery(document).ready(function($) {
