@@ -135,6 +135,9 @@ class Wp_Hosting_Benchmarking_SSL_Testing {
                }
         $output .= '</ul>';
         $output .= $this->format_ssl_simulations($result['endpoints'][0]['details']['sims']);
+        // HTTP Request Information
+        $output .= format_http_request_info($result['endpoints'][0]['details']['httpTransactions']);
+
 
         // Vulnerabilities
         $output .= '<h3><i class="fas fa-bug"></i> Vulnerabilities</h3>';
@@ -186,6 +189,50 @@ class Wp_Hosting_Benchmarking_SSL_Testing {
         return $output;
     }
 
+    function format_http_request_info($httpTransactions) {
+        $output = '<h3><i class="fas fa-exchange-alt"></i> HTTP Request Information</h3>';
+        
+        foreach ($httpTransactions as $index => $transaction) {
+            $output .= '<div class="http-transaction">';
+            $output .= '<h4>Transaction #' . ($index + 1) . '</h4>';
+            
+            // Request Details
+            $output .= '<h5><i class="fas fa-arrow-right"></i> Request</h5>';
+            $output .= '<ul>';
+            $output .= '<li><strong>URL:</strong> ' . esc_html($transaction['requestUrl']) . '</li>';
+            $output .= '<li><strong>Method:</strong> ' . esc_html(explode(' ', $transaction['requestLine'])[0]) . '</li>';
+            $output .= '</ul>';
+            
+            // Request Headers
+            $output .= '<h6>Request Headers:</h6>';
+            $output .= '<ul>';
+            foreach ($transaction['requestHeaders'] as $header) {
+                $output .= '<li>' . esc_html($header) . '</li>';
+            }
+            $output .= '</ul>';
+            
+            // Response Details
+            $output .= '<h5><i class="fas fa-arrow-left"></i> Response</h5>';
+            $output .= '<ul>';
+            $output .= '<li><strong>Status:</strong> ' . esc_html($transaction['statusCode'] . ' ' . explode(' ', $transaction['responseLine'], 3)[2]) . '</li>';
+            $output .= '</ul>';
+            
+            // Response Headers
+            $output .= '<h6>Response Headers:</h6>';
+            $output .= '<ul>';
+            foreach ($transaction['responseHeaders'] as $header) {
+                $output .= '<li><strong>' . esc_html($header['name']) . ':</strong> ' . esc_html($header['value']) . '</li>';
+            }
+            $output .= '</ul>';
+            
+            $output .= '</div>';
+        }
+        
+        return $output;
+    }
+
+
+    
 
 } // end of class
 
