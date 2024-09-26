@@ -60,7 +60,7 @@ jQuery(document).ready(function($) {
             data: {
                 action: 'ssl_registration',
                 form_data: formData,
-                nonce: sslTestingData.registrationNonce
+                nonce: '<?php echo wp_create_nonce('ssl_registration_nonce'); ?>'
             },
             success: function(response) {
                 if (response.success) {
@@ -88,7 +88,7 @@ jQuery(document).ready(function($) {
             type: 'POST',
             data: {
                 action: 'ssl_testing',
-                nonce: sslTestingData.testingNonce
+                nonce: '<?php echo wp_create_nonce('ssl_testing_nonce'); ?>'
             },
             success: function(response) {
                 if (response.success) {
