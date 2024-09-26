@@ -59,3 +59,34 @@
     background-color: #f5f1ca; /* Light yellow background */
     font-weight: bold;
 }
+
+
+.ssl-simulations-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.ssl-simulations-table th,
+.ssl-simulations-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.ssl-simulations-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.ssl-simulations-table tr.error {
+    background-color: #ffeeee;
+}
+
+.ssl-simulations-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.ssl-simulations-table tr:hover {
+    background-color: #f5f5f5;
+}

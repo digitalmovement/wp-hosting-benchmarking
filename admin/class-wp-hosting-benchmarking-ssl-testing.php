@@ -126,6 +126,16 @@ class Wp_Hosting_Benchmarking_SSL_Testing {
         }
         $output .= '</ul>';
     
+        // Handshake
+        $output .= '<h3><i class="fas fa-lock"></i> Handshake Simulation</h3>';
+        $output .= '<ul>';
+               foreach ($result['sim'][0]['details']['suites']['list'] as $suite) {
+                   $icon = ($suite['q'] == 1) ? '<i class="fas fa-times-circle" style="color: red;"></i>' : '<i class="fas fa-check-circle" style="color: green;"></i>';
+                   $output .= '<li>' . $icon . ' ' . esc_html($suite['name']) . '</li>';
+               }
+        $output .= '</ul>';
+        $output .= format_ssl_simulations($result['endpoints'][0]['details']['sims']);
+
         // Vulnerabilities
         $output .= '<h3><i class="fas fa-bug"></i> Vulnerabilities</h3>';
         $output .= '<ul>';
@@ -146,6 +156,37 @@ class Wp_Hosting_Benchmarking_SSL_Testing {
         $output .= '</div>';
         return $output;
     }
+
+
+    function format_ssl_simulations($sims) {
+        $output = '<h3><i class="fas fa-laptop"></i> Client Simulations</h3>';
+        $output .= '<table class="ssl-simulations-table">';
+        $output .= '<thead><tr><th>Client</th><th>Version</th><th>Result</th></tr></thead>';
+        $output .= '<tbody>';
+    
+        foreach ($sims['results'] as $sim) {
+            $client = $sim['client'];
+            $errorClass = ($sim['errorCode'] !== 0) ? ' class="error"' : '';
+            
+            $output .= '<tr' . $errorClass . '>';
+            $output .= '<td>' . esc_html($client['name']) . '</td>';
+            $output .= '<td>' . esc_html($client['version']) . '</td>';
+            
+            if ($sim['errorCode'] === 0) {
+                $output .= '<td><i class="fas fa-check-circle" style="color: green;"></i> ' . esc_html($sim['suiteName']) . '</td>';
+            } else {
+                $output .= '<td><i class="fas fa-exclamation-triangle" style="color: red;"></i> ' . esc_html($sim['errorMessage']) . '</td>';
+            }
+            
+            $output .= '</tr>';
+        }
+    
+        $output .= '</tbody></table>';
+    
+        return $output;
+    }
+
+    
 } // end of class
 
 
