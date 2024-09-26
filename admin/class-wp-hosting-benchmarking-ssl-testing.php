@@ -58,13 +58,79 @@ class Wp_Hosting_Benchmarking_SSL_Testing {
         check_ajax_referer('ssl_testing_nonce', 'nonce');
 
         $api = new Wp_Hosting_Benchmarking_API();
-        $result = $api->test_ssl_certificate(home_url());
+       // $result = $api->test_ssl_certificate(home_url());
+        $result = $api->test_ssl_certificate(home_url(), 'jdoe@digitalmovement.co.uk');
 
-        if ($result) {
-            wp_send_json_success($result);
+        if (isset($result['error'])) {
+            // Handle the error
+            echo "Error: " . $result['error'];
+        } elseif (isset($result['status']) && $result['status'] !== 'READY') {
+            // Handle in-progress status
+            echo "Status: " . $result['status'] . " - " . $result['message'];
         } else {
-            wp_send_json_error('SSL testing failed.');
+            // Process the full SSL Labs data
+            $formatted_result = $this->format_ssl_test_results($result);
+            echo $formatted_result;
         }
+
+
+    }
+
+    // Add the format_ssl_test_results function here
+    function format_ssl_test_results($result) {
+        $output = '<div class="ssl-test-results">';
+        
+        // Overall Rating
+        $grade = $result['endpoints'][0]['grade'];
+        $grade_color = ($grade === 'A' || $grade === 'A+') ? 'green' : (($grade === 'B') ? 'orange' : 'red');
+        $output .= '<h2>Overall Rating: <span style="color: ' . $grade_color . ';">' . $grade . '</span></h2>';
+    
+        // Certificate Information
+        $cert = $result['certs'][0];
+        $output .= '<h3><img src="' . plugins_url('assets/icon-certificate.png', __FILE__) . '" alt="Certificate" width="20" height="20"> Certificate Information</h3>';
+        $output .= '<ul>';
+        $output .= '<li>Subject: ' . esc_html($cert['subject']) . '</li>';
+        $output .= '<li>Issuer: ' . esc_html($cert['issuerSubject']) . '</li>';
+        $output .= '<li>Valid from: ' . date('Y-m-d', $cert['notBefore']/1000) . '</li>';
+        $output .= '<li>Valid until: ' . date('Y-m-d', $cert['notAfter']/1000) . '</li>';
+        $output .= '</ul>';
+    
+        // Protocols
+        $output .= '<h3><img src="' . plugins_url('assets/icon-protocol.png', __FILE__) . '" alt="Protocols" width="20" height="20"> Supported Protocols</h3>';
+        $output .= '<ul>';
+        foreach ($result['endpoints'][0]['details']['protocols'] as $protocol) {
+            $output .= '<li>' . esc_html($protocol['name'] . ' ' . $protocol['version']) . '</li>';
+        }
+        $output .= '</ul>';
+    
+        // Cipher Suites
+        $output .= '<h3><img src="' . plugins_url('assets/icon-cipher.png', __FILE__) . '" alt="Cipher Suites" width="20" height="20"> Cipher Suites</h3>';
+        $output .= '<ul>';
+        foreach ($result['endpoints'][0]['details']['suites']['list'] as $suite) {
+            $color = ($suite['q'] == 1) ? 'red' : 'green';
+            $output .= '<li style="color: ' . $color . ';">' . esc_html($suite['name']) . '</li>';
+        }
+        $output .= '</ul>';
+    
+        // Vulnerabilities
+        $output .= '<h3><img src="' . plugins_url('assets/icon-vulnerability.png', __FILE__) . '" alt="Vulnerabilities" width="20" height="20"> Vulnerabilities</h3>';
+        $output .= '<ul>';
+        $vulnerabilities = [
+            'heartbleed' => 'Heartbleed',
+            'poodle' => 'POODLE',
+            'freak' => 'FREAK',
+            'logjam' => 'Logjam'
+        ];
+        foreach ($vulnerabilities as $key => $name) {
+            $vulnerable = $result['endpoints'][0]['details'][$key];
+            $color = $vulnerable ? 'red' : 'green';
+            $status = $vulnerable ? 'Vulnerable' : 'Not Vulnerable';
+            $output .= '<li>' . esc_html($name) . ': <span style="color: ' . $color . ';">' . $status . '</span></li>';
+        }
+        $output .= '</ul>';
+    
+        $output .= '</div>';
+        return $output;
     }
 } // end of class
 

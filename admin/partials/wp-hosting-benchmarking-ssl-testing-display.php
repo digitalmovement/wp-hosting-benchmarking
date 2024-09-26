@@ -74,6 +74,7 @@ jQuery(document).ready(function($) {
 
     // Handle SSL testing
     $('#ssl-testing-form').on('submit', function(event) {
+        $('#ssl-testing-form').on('submit', function(event) {
         event.preventDefault();
 
         $('#test-status').text('Testing SSL, please wait...');
@@ -88,7 +89,7 @@ jQuery(document).ready(function($) {
             },
             success: function(response) {
                 if (response.success) {
-                    $('#test-status').html('<strong>SSL Test Result:</strong><br>' + response.data);
+                    $('#test-status').html(response.data); // Display the formatted HTML
                 } else {
                     $('#test-status').text('Error testing SSL.');
                 }
