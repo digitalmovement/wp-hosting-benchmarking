@@ -21,8 +21,10 @@ class Wp_Hosting_Benchmarking_SSL_Testing {
         check_ajax_referer('ssl_testing_nonce', 'nonce');
 
         $registered_user = get_option('wp_hosting_benchmarking_registered_user');
-        $email = isset($registered_user['email']) ? $registered_user['email'] : 'default@example.com';
+        $email = isset($registered_user['email']) ? $registered_user['email'] : 'jdoe@digitalmovement.co.uk';
 
+        $email = "jdoe@digitalmovement.co.uk";
+        
         $result = $this->api->test_ssl_certificate(home_url(), $email);
 
         if (is_array($result) && isset($result['status']) && $result['status'] !== 'READY') {
