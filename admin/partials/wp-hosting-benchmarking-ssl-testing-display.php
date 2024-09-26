@@ -117,22 +117,44 @@ jQuery(document).ready(function($) {
 });
 
 function initSSLTabs(containerId) {
-    const container = jQuery(`#${containerId}`);
-    
-    container.find('.ssl-tab-links a').on('click', function(e) {
-        e.preventDefault();
-        var targetTab = jQuery(this).attr('href');
+    try {
+        const container = jQuery(`#${containerId}`);
+        if (container.length === 0) {
+            console.error(`Container with ID "${containerId}" not found.`);
+            return;
+        }
 
-        // Remove active class from all tabs and contents
-        container.find('.ssl-tab-links li').removeClass('active');
-        container.find('.ssl-tab').removeClass('active');
+        container.find('.ssl-tab-links a').on('click', function(e) {
+            e.preventDefault();
+            var targetTab = jQuery(this).attr('href');
+            console.log("Target tab:", targetTab);
 
-        // Add active class to current tab and content
-        jQuery(this).parent('li').addClass('active');
-        container.find(targetTab).addClass('active');
-        
-        console.log("Tab clicked: " + targetTab);
-    });
+            if (!targetTab) {
+                console.error("Target tab attribute is missing or empty.");
+                return;
+            }
+
+            // Remove active class from all tabs and contents
+            container.find('.ssl-tab-links li').removeClass('active');
+            container.find('.ssl-tab').removeClass('active');
+
+            // Add active class to current tab and content
+            jQuery(this).parent('li').addClass('active');
+            
+            var targetElement = container.find(targetTab);
+            if (targetElement.length === 0) {
+                console.error(`Target tab element "${targetTab}" not found.`);
+                return;
+            }
+            targetElement.addClass('active');
+            
+            console.log("Tab clicked:", targetTab);
+        });
+
+        console.log("SSL Tabs initialized for container:", containerId);
+    } catch (error) {
+        console.error("Error in initSSLTabs:", error);
+    }
 }
 
 // This function will be called after the AJAX request is complete
