@@ -116,15 +116,29 @@
     color: #777;
 }
 
-.http-transaction ul {
-    list-style-type: none;
-    padding-left: 20px;
+.http-info-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 15px;
 }
 
-.http-transaction li {
-    margin-bottom: 5px;
+.http-info-table th,
+.http-info-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
 }
 
-.http-transaction strong {
+.http-info-table th {
+    background-color: #f2f2f2;
     font-weight: bold;
+    width: 30%;
+}
+
+.http-info-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.http-info-table tr:hover {
+    background-color: #f5f5f5;
 }

@@ -198,39 +198,43 @@ class Wp_Hosting_Benchmarking_SSL_Testing {
             
             // Request Details
             $output .= '<h5><i class="fas fa-arrow-right"></i> Request</h5>';
-            $output .= '<ul>';
-            $output .= '<li><strong>URL:</strong> ' . esc_html($transaction['requestUrl']) . '</li>';
-            $output .= '<li><strong>Method:</strong> ' . esc_html(explode(' ', $transaction['requestLine'])[0]) . '</li>';
-            $output .= '</ul>';
+            $output .= '<table class="http-info-table">';
+            $output .= '<tr><th>URL</th><td>' . esc_html($transaction['requestUrl']) . '</td></tr>';
+            $output .= '<tr><th>Method</th><td>' . esc_html(explode(' ', $transaction['requestLine'])[0]) . '</td></tr>';
+            $output .= '</table>';
             
             // Request Headers
             $output .= '<h6>Request Headers:</h6>';
-            $output .= '<ul>';
+            $output .= '<table class="http-info-table">';
             foreach ($transaction['requestHeaders'] as $header) {
-                $output .= '<li>' . esc_html($header) . '</li>';
+                $parts = explode(':', $header, 2);
+                if (count($parts) == 2) {
+                    $output .= '<tr><th>' . esc_html(trim($parts[0])) . '</th><td>' . esc_html(trim($parts[1])) . '</td></tr>';
+                } else {
+                    $output .= '<tr><td colspan="2">' . esc_html($header) . '</td></tr>';
+                }
             }
-            $output .= '</ul>';
+            $output .= '</table>';
             
             // Response Details
             $output .= '<h5><i class="fas fa-arrow-left"></i> Response</h5>';
-            $output .= '<ul>';
-            $output .= '<li><strong>Status:</strong> ' . esc_html($transaction['statusCode'] . ' ' . explode(' ', $transaction['responseLine'], 3)[2]) . '</li>';
-            $output .= '</ul>';
+            $output .= '<table class="http-info-table">';
+            $output .= '<tr><th>Status</th><td>' . esc_html($transaction['statusCode'] . ' ' . explode(' ', $transaction['responseLine'], 3)[2]) . '</td></tr>';
+            $output .= '</table>';
             
             // Response Headers
             $output .= '<h6>Response Headers:</h6>';
-            $output .= '<ul>';
+            $output .= '<table class="http-info-table">';
             foreach ($transaction['responseHeaders'] as $header) {
-                $output .= '<li><strong>' . esc_html($header['name']) . ':</strong> ' . esc_html($header['value']) . '</li>';
+                $output .= '<tr><th>' . esc_html($header['name']) . '</th><td>' . esc_html($header['value']) . '</td></tr>';
             }
-            $output .= '</ul>';
+            $output .= '</table>';
             
             $output .= '</div>';
         }
         
         return $output;
     }
-
 
 
 
