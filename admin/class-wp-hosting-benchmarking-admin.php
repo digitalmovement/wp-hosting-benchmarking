@@ -77,8 +77,21 @@ class Wp_Hosting_Benchmarking_Admin {
             'nonce' => wp_create_nonce('wp_hosting_benchmarking_nonce'), // Create nonce properly within this hook
             'selected_region' => get_option('wp_hosting_benchmarking_selected_region') // Pass the selected region            
         ));
+
+        wp_enqueue_script($this->plugin_name . '-settings', plugin_dir_url(__FILE__) . 'js/wp-hosting-benchmarking-settings.js', array('jquery'), $this->version, false);
+        wp_localize_script($this->plugin_name . '-settings', 'wpHostingBenchmarkingSettings', array(
+            'ajax_url' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('wp_hosting_benchmarking_settings_nonce'),
+        ));
+
+
+
     }
-  /**
+
+
+    /**
+     * wpHostingBenchmarkingSettings
+     * 
      * Add admin menu item for WP Benchmarking
      */
     public function add_plugin_admin_menu() {
@@ -273,6 +286,6 @@ class Wp_Hosting_Benchmarking_Admin {
         wp_send_json_success($packages);
     }
 
-    
+
 
 }
