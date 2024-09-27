@@ -1,8 +1,11 @@
-
-
 jQuery(document).ready(function($) {
-    $('#wp_hosting_benchmarking_selected_provider').on('change', function() {
+    var $providerSelect = $('#wp_hosting_benchmarking_selected_provider');
+    var $packageSelect = $('#wp_hosting_benchmarking_selected_package');
+
+    $providerSelect.on('change', function() {
         var provider = $(this).val();
+        $packageSelect.empty().append('<option value="">Select a package</option>');
+
         if (provider) {
             $.ajax({
                 url: wpHostingBenchmarkingSettings.ajax_url,
@@ -15,19 +18,20 @@ jQuery(document).ready(function($) {
                 success: function(response) {
                     if (response.success) {
                         var packages = response.data;
-                        var packagesHtml = '<h3>Available Packages:</h3><ul>';
                         packages.forEach(function(package) {
-                            packagesHtml += '<li><strong>' + package.type + '</strong>: ' + package.description + '</li>';
+                            $packageSelect.append($('<option>', {
+                                value: package.type,
+                                text: package.type
+                            }));
                         });
-                        packagesHtml += '</ul>';
-                        $('#provider_packages').html(packagesHtml);
                     }
                 }
             });
-        } else {
-            $('#provider_packages').empty();
         }
     });
+
+    // Trigger change event on page load if a provider is already selected
+    if ($providerSelect.val()) {
+        $providerSelect.trigger('change');
+    }
 });
-
-

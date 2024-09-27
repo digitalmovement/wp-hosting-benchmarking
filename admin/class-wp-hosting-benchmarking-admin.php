@@ -179,7 +179,9 @@ class Wp_Hosting_Benchmarking_Admin {
         // Register a new setting for "wp_hosting_benchmarking_settings"
         register_setting('wp_hosting_benchmarking_settings', 'wp_hosting_benchmarking_option');
         register_setting('wp_hosting_benchmarking_settings', 'wp_hosting_benchmarking_selected_region');
+
         register_setting('wp_hosting_benchmarking_settings', 'wp_hosting_benchmarking_selected_provider');
+        register_setting('wp_hosting_benchmarking_settings', 'wp_hosting_benchmarking_selected_package');
 
         // Add a new section in the "Settings" page
         add_settings_section(
@@ -211,6 +213,14 @@ class Wp_Hosting_Benchmarking_Admin {
             'wp_hosting_benchmarking_selected_provider',
             'Select Hosting Provider',
             array($this, 'hosting_provider_dropdown_callback'),
+            'wp-hosting-benchmarking-settings',
+            'wp_hosting_benchmarking_section'
+        );
+
+        add_settings_field(
+            'wp_hosting_benchmarking_selected_package',
+            'Select Package',
+            array($this, 'hosting_package_dropdown_callback'),
             'wp-hosting-benchmarking-settings',
             'wp_hosting_benchmarking_section'
         );
@@ -249,7 +259,7 @@ class Wp_Hosting_Benchmarking_Admin {
         echo '<p class="description">Please select the region closest to where most of your customers or visitors are based. </p>';
     }
 
-    public function hosting_provider_dropdown_callback() {
+   public function hosting_provider_dropdown_callback() {
         $providers = $this->api->get_hosting_providers();
         $selected_provider = get_option('wp_hosting_benchmarking_selected_provider');
 
@@ -263,11 +273,36 @@ class Wp_Hosting_Benchmarking_Admin {
                 echo '</option>';
             }
             echo '</select>';
-            echo '<div id="provider_packages"></div>';
         } else {
             echo '<p>No hosting providers available.</p>';
         }
     }
+
+    public function hosting_package_dropdown_callback() {
+        $selected_provider = get_option('wp_hosting_benchmarking_selected_provider');
+        $selected_package = get_option('wp_hosting_benchmarking_selected_package');
+
+        echo '<select id="wp_hosting_benchmarking_selected_package" name="wp_hosting_benchmarking_selected_package">';
+        echo '<option value="">Select a package</option>';
+        echo '</select>';
+
+        if ($selected_provider) {
+            $providers = $this->api->get_hosting_providers();
+            foreach ($providers as $provider) {
+                if ($provider['name'] === $selected_provider) {
+                    foreach ($provider['packages'] as $package) {
+                        $package_type = esc_attr($package['type']);
+                        echo '<option value="' . $package_type . '"' . selected($selected_package, $package_type, false) . '>';
+                        echo esc_html($package_type);
+                        echo '</option>';
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+
 
     public function ajax_get_provider_packages() {
         check_ajax_referer('wp_hosting_benchmarking_settings_nonce', 'nonce');
@@ -285,7 +320,5 @@ class Wp_Hosting_Benchmarking_Admin {
 
         wp_send_json_success($packages);
     }
-
-
 
 }
