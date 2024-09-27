@@ -9,7 +9,7 @@ settings_errors('wp_hosting_benchmarking_messages');
 ?>
 <div class="wrap">
     <h1><?php echo esc_html('WP Hosting Benchmarking Settings'); ?></h1>
-    <form method="post" action="options.php">
+    <form method="post" action="options.php" id="wp-hosting-benchmarking-settings-form">
         <?php
         // Output security fields for the registered setting group "wp_hosting_benchmarking_settings"
         settings_fields('wp_hosting_benchmarking_settings'); // Group name must match register_setting()
