@@ -198,14 +198,6 @@ class Wp_Hosting_Benchmarking_Admin {
             'wp-hosting-benchmarking-settings' // Page slug
         );
 
-        // Add a new field to the "General Settings" section
-        add_settings_field(
-            'wp_hosting_benchmarking_field',    // Field ID
-            'Sample Setting',                  // Field title
-            array($this, 'render_sample_setting_field'), // Callback function to render the field
-            'wp-hosting-benchmarking-settings', // Page slug
-            'wp_hosting_benchmarking_section'   // Section ID (fixed to match)
-        );
 
         // Add a settings field (dropdown for GCP regions)
         add_settings_field(
@@ -244,14 +236,8 @@ class Wp_Hosting_Benchmarking_Admin {
     }
 
     /**
-     * Render the field for the sample setting.
+     * Render the fields
      */
-    public function render_sample_setting_field() {
-        $option = get_option('wp_hosting_benchmarking_option');
-        ?>
-        <input type="text" name="wp_hosting_benchmarking_option" value="<?php echo esc_attr($option); ?>">
-        <?php
-    }
 
     // Callback to display the GCP region dropdown
     public function gcp_region_dropdown_callback() {
@@ -349,5 +335,5 @@ class Wp_Hosting_Benchmarking_Admin {
         <?php
     }
 
-    
+
 }

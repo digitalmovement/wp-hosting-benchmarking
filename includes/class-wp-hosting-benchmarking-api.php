@@ -95,7 +95,7 @@ class Wp_Hosting_Benchmarking_API {
         $cached_data = get_transient($cache_key);
 
         if ($cached_data !== false) {
-            return $cached_data;
+//            return $cached_data;
         }
 
         $response = wp_remote_get('https://assets.fastestwordpress.com/wphostingprovider.json');
@@ -109,11 +109,15 @@ class Wp_Hosting_Benchmarking_API {
         if (!isset($data['providers']) || !is_array($data['providers'])) {
             return false;
         }
+        // Sort the providers array alphabetically by name
+        usort($data['providers'], function($a, $b) {
+            return strcasecmp($a['name'], $b['name']);
+        });
 
         set_transient($cache_key, $data['providers'], WEEK_IN_SECONDS);
 
         return $data['providers'];
     }
 
-    
+
 }
