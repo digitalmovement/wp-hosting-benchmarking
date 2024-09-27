@@ -340,4 +340,14 @@ class Wp_Hosting_Benchmarking_Admin {
         wp_send_json_success($packages);
     }
 
+    public function render_data_collection_field() {
+        $option = get_option('wp_hosting_benchmarking_allow_data_collection', true);
+        ?>
+        <input type="checkbox" id="wp_hosting_benchmarking_allow_data_collection" name="wp_hosting_benchmarking_allow_data_collection" value="1" <?php checked($option, true); ?>>
+        <label for="wp_hosting_benchmarking_allow_data_collection">Allow anonymous data collection</label>
+        <p class="description">Help improve our plugin by allowing anonymous data collection. <a href="https://fastestwordpress.com/privacy-policy" target="_blank">Learn more about our privacy policy</a>.</p>
+        <?php
+    }
+
+    
 }
