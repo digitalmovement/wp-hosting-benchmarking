@@ -1,4 +1,11 @@
 <?php
+if (!current_user_can('manage_options')) {
+    return;
+}
+
+// Show error/update messages
+settings_errors('wp_hosting_benchmarking_messages');
+
 ?>
 <div class="wrap">
     <h1><?php echo esc_html('WP Hosting Benchmarking Settings'); ?></h1>
