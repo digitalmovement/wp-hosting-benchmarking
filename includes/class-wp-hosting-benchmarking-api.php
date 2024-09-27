@@ -93,31 +93,41 @@ class Wp_Hosting_Benchmarking_API {
     public function get_hosting_providers() {
         $cache_key = 'wp_hosting_benchmarking_providers';
         $cached_data = get_transient($cache_key);
-
+    
         if ($cached_data !== false) {
-//            return $cached_data;
+            error_log('Returning cached data');
+            return $cached_data;
         }
-
+    
         $response = wp_remote_get('https://assets.fastestwordpress.com/wphostingprovider.json');
         if (is_wp_error($response)) {
+            error_log('Error fetching hosting providers: ' . $response->get_error_message());
             return false;
         }
-
+    
         $body = wp_remote_retrieve_body($response);
         $data = json_decode($body, true);
-
+    
         if (!isset($data['providers']) || !is_array($data['providers'])) {
+            error_log('Invalid data structure in hosting providers response');
             return false;
         }
+    
+        error_log('Number of providers before sorting: ' . count($data['providers']));
+    
         // Sort the providers array alphabetically by name
         usort($data['providers'], function($a, $b) {
             return strcasecmp($a['name'], $b['name']);
         });
-
+    
+        error_log('Number of providers after sorting: ' . count($data['providers']));
+    
+        // Debug: Log the first few provider names after sorting
+        $debug_names = array_slice(array_column($data['providers'], 'name'), 0, 5);
+        error_log('First 5 provider names after sorting: ' . implode(', ', $debug_names));
+    
         set_transient($cache_key, $data['providers'], WEEK_IN_SECONDS);
-
+    
         return $data['providers'];
     }
-
-
 }
