@@ -182,6 +182,13 @@ class Wp_Hosting_Benchmarking_Admin {
 
         register_setting('wp_hosting_benchmarking_settings', 'wp_hosting_benchmarking_selected_provider');
         register_setting('wp_hosting_benchmarking_settings', 'wp_hosting_benchmarking_selected_package');
+        // Register new setting for anonymous data collection
+        register_setting('wp_hosting_benchmarking_settings', 'wp_hosting_benchmarking_allow_data_collection', array(
+            'type' => 'boolean',
+            'default' => true,
+            'sanitize_callback' => 'boolval'
+        ));
+
 
         // Add a new section in the "Settings" page
         add_settings_section(
@@ -221,6 +228,15 @@ class Wp_Hosting_Benchmarking_Admin {
             'wp_hosting_benchmarking_selected_package',
             'Select Package',
             array($this, 'hosting_package_dropdown_callback'),
+            'wp-hosting-benchmarking-settings',
+            'wp_hosting_benchmarking_section'
+        );
+
+              // Add a new field for anonymous data collection
+        add_settings_field(
+            'wp_hosting_benchmarking_allow_data_collection',
+            'Allow anonymous data collection',
+             array($this, 'render_data_collection_field'),
             'wp-hosting-benchmarking-settings',
             'wp_hosting_benchmarking_section'
         );
@@ -306,7 +322,7 @@ class Wp_Hosting_Benchmarking_Admin {
         }
     }
 
-    
+
     public function ajax_get_provider_packages() {
         check_ajax_referer('wp_hosting_benchmarking_settings_nonce', 'nonce');
 

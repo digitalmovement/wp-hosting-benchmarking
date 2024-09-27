@@ -22,5 +22,21 @@ settings_errors('wp_hosting_benchmarking_messages');
         ?>
     </form>
 </div>
+
+
+<!-- Confirmation Modal -->
+<div id="data-collection-modal" style="display: none;">
+    <div class="modal-content">
+        <h2>Are you sure?</h2>
+        <p>Are you sure you wish to not provide us with anonymous statistics? It really helps the development of this free plugin. We take privacy seriously!</p>
+        <p><a href="https://fastestwordpress.com/privacy-policy" target="_blank">Learn more about our privacy policy</a></p>
+        <div class="modal-buttons">
+            <button id="modal-cancel" class="button">Cancel</button>
+            <button id="modal-confirm" class="button button-primary">No stats for you</button>
+        </div>
+    </div>
+</div>
+
+
 <?php
 

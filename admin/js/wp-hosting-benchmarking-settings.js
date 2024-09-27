@@ -45,4 +45,30 @@ jQuery(document).ready(function($) {
             }
         });
     }
+
+	// Handles popup modal 
+	var $checkbox = $('#wp_hosting_benchmarking_allow_data_collection');
+    var $form = $('#wp-hosting-benchmarking-settings-form');
+    var $modal = $('#data-collection-modal');
+
+    $form.on('submit', function(e) {
+        if (!$checkbox.is(':checked') && $checkbox.data('original') !== false) {
+            e.preventDefault();
+            $modal.show();
+        }
+    });
+
+    $('#modal-cancel').on('click', function() {
+        $modal.hide();
+        $checkbox.prop('checked', true);
+    });
+
+    $('#modal-confirm').on('click', function() {
+        $modal.hide();
+        $form.submit();
+    });
+
+    $checkbox.data('original', $checkbox.is(':checked'));
+
+
 });
