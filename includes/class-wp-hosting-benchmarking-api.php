@@ -115,19 +115,30 @@ class Wp_Hosting_Benchmarking_API {
     
         error_log('Number of providers before sorting: ' . count($data['providers']));
     
-        // Sort the providers array alphabetically by name
-        usort($data['providers'], function($a, $b) {
+        $unique_providers = [];
+        $seen_names = [];
+        foreach ($data['providers'] as $provider) {
+            if (!isset($seen_names[$provider['name']])) {
+                $unique_providers[] = $provider;
+                $seen_names[$provider['name']] = true;
+            }
+        }
+    
+        // Sort the unique providers array alphabetically by name
+        usort($unique_providers, function($a, $b) {
             return strcasecmp($a['name'], $b['name']);
         });
     
-        error_log('Number of providers after sorting: ' . count($data['providers']));
+        // Debug: Log the number of providers before and after duplicate removal
+        error_log('Number of providers before duplicate removal: ' . count($data['providers']));
+        error_log('Number of providers after duplicate removal: ' . count($unique_providers));
     
-        // Debug: Log the first few provider names after sorting
-        $debug_names = array_slice(array_column($data['providers'], 'name'), 0, 5);
-        error_log('First 5 provider names after sorting: ' . implode(', ', $debug_names));
+        // Debug: Log the first few provider names after sorting and duplicate removal
+        $debug_names = array_slice(array_column($unique_providers, 'name'), 0, 5);
+        error_log('First 5 provider names after sorting and duplicate removal: ' . implode(', ', $debug_names));
     
-        set_transient($cache_key, $data['providers'], WEEK_IN_SECONDS);
+        set_transient($cache_key, $unique_providers, WEEK_IN_SECONDS);
     
-        return $data['providers'];
+        return $unique_providers;
     }
 }
