@@ -284,7 +284,6 @@ class Wp_Hosting_Benchmarking_Admin {
 
         echo '<select id="wp_hosting_benchmarking_selected_package" name="wp_hosting_benchmarking_selected_package">';
         echo '<option value="">Select a package</option>';
-        echo '</select>';
 
         if ($selected_provider) {
             $providers = $this->api->get_hosting_providers();
@@ -299,6 +298,11 @@ class Wp_Hosting_Benchmarking_Admin {
                     break;
                 }
             }
+            echo '</select>';
+
+        } else {
+            echo '<p>No hosting packages available.</p>';
+
         }
     }
 
