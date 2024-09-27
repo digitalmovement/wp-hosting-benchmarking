@@ -281,10 +281,10 @@ class Wp_Hosting_Benchmarking_Admin {
     public function hosting_package_dropdown_callback() {
         $selected_provider = get_option('wp_hosting_benchmarking_selected_provider');
         $selected_package = get_option('wp_hosting_benchmarking_selected_package');
-
+    
         echo '<select id="wp_hosting_benchmarking_selected_package" name="wp_hosting_benchmarking_selected_package">';
         echo '<option value="">Select a package</option>';
-
+    
         if ($selected_provider) {
             $providers = $this->api->get_hosting_providers();
             foreach ($providers as $provider) {
@@ -298,16 +298,15 @@ class Wp_Hosting_Benchmarking_Admin {
                     break;
                 }
             }
-            echo '</select>';
-
-        } else {
-            echo '<p>No hosting packages available.</p>';
-
+        }
+        echo '</select>';
+    
+        if (!$selected_provider) {
+            echo '<p class="description">Please select a provider first.</p>';
         }
     }
 
-
-
+    
     public function ajax_get_provider_packages() {
         check_ajax_referer('wp_hosting_benchmarking_settings_nonce', 'nonce');
 
