@@ -1,9 +1,9 @@
 jQuery(document).ready(function($) {
     var $providerSelect = $('#wp_hosting_benchmarking_selected_provider');
     var $packageSelect = $('#wp_hosting_benchmarking_selected_package');
+    var selectedPackage = $packageSelect.val(); // Store the initially selected package
 
-    $providerSelect.on('change', function() {
-        var provider = $(this).val();
+    function updatePackages(provider, callback) {
         $packageSelect.empty().append('<option value="">Select a package</option>');
 
         if (provider) {
@@ -24,14 +24,25 @@ jQuery(document).ready(function($) {
                                 text: package.type
                             }));
                         });
+                        if (callback) callback();
                     }
                 }
             });
         }
+    }
+
+    $providerSelect.on('change', function() {
+        var provider = $(this).val();
+        updatePackages(provider);
     });
 
-    // Trigger change event on page load if a provider is already selected
+    // If a provider is already selected on page load
     if ($providerSelect.val()) {
-        $providerSelect.trigger('change');
+        updatePackages($providerSelect.val(), function() {
+            // After populating packages, set the previously selected package
+            if (selectedPackage) {
+                $packageSelect.val(selectedPackage);
+            }
+        });
     }
 });
