@@ -69,8 +69,8 @@ class Wp_Hosting_Benchmarking_Admin {
         wp_enqueue_script('chartjs-adapter-luxon', 'https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon', array('chart-js'), null, true);
 
         wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/wp-hosting-benchmarking-admin.js', array('jquery'), $this->version, false);
-//        wp_enqueue_style('font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css');
         wp_enqueue_style('font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+
         // Localize script after enqueuing
         wp_localize_script($this->plugin_name, 'wpHostingBenchmarking', array(
             'ajax_url' => admin_url('admin-ajax.php'),
@@ -165,37 +165,42 @@ class Wp_Hosting_Benchmarking_Admin {
     public function register_settings() {
         // Register a new setting for "wp_hosting_benchmarking_settings"
         register_setting('wp_hosting_benchmarking_settings', 'wp_hosting_benchmarking_option');
-    register_setting('wp_hosting_benchmarking_settings', 'wp_hosting_benchmarking_selected_region');
+        register_setting('wp_hosting_benchmarking_settings', 'wp_hosting_benchmarking_selected_region');
+        register_setting('wp_hosting_benchmarking_settings', 'wp_hosting_benchmarking_selected_provider');
 
-    // Add a new section in the "Settings" page
-    add_settings_section(
-        'wp_hosting_benchmarking_section', // Section ID
-        'General Settings',                // Section title
-        null,                              // Section callback (not needed)
-        'wp-hosting-benchmarking-settings' // Page slug
-    );
+        // Add a new section in the "Settings" page
+        add_settings_section(
+            'wp_hosting_benchmarking_section', // Section ID
+            'General Settings',                // Section title
+            null,                              // Section callback (not needed)
+            'wp-hosting-benchmarking-settings' // Page slug
+        );
 
-    // Add a new field to the "General Settings" section
-    add_settings_field(
-        'wp_hosting_benchmarking_field',    // Field ID
-        'Sample Setting',                  // Field title
-        array($this, 'render_sample_setting_field'), // Callback function to render the field
-        'wp-hosting-benchmarking-settings', // Page slug
-        'wp_hosting_benchmarking_section'   // Section ID (fixed to match)
-    );
+        // Add a new field to the "General Settings" section
+        add_settings_field(
+            'wp_hosting_benchmarking_field',    // Field ID
+            'Sample Setting',                  // Field title
+            array($this, 'render_sample_setting_field'), // Callback function to render the field
+            'wp-hosting-benchmarking-settings', // Page slug
+            'wp_hosting_benchmarking_section'   // Section ID (fixed to match)
+        );
 
-    // Add a settings field (dropdown for GCP regions)
-    add_settings_field(
-        'wp_hosting_benchmarking_selected_region', // Field ID
-        'Select Closest GCP Region',               // Field title
-        array($this, 'gcp_region_dropdown_callback'), // Callback to display the dropdown
-        'wp-hosting-benchmarking-settings',        // Page slug
-        'wp_hosting_benchmarking_section'          // Section ID (fixed to match)
-    );
+        // Add a settings field (dropdown for GCP regions)
+        add_settings_field(
+            'wp_hosting_benchmarking_selected_region', // Field ID
+            'Select Closest GCP Region',               // Field title
+            array($this, 'gcp_region_dropdown_callback'), // Callback to display the dropdown
+            'wp-hosting-benchmarking-settings',        // Page slug
+            'wp_hosting_benchmarking_section'          // Section ID (fixed to match)
+        );
 
-
-
-
+        add_settings_field(
+            'wp_hosting_benchmarking_selected_provider',
+            'Select Hosting Provider',
+            array($this, 'hosting_provider_dropdown_callback'),
+            'wp-hosting-benchmarking-settings',
+            'wp_hosting_benchmarking_section'
+        );
 
     }
 
@@ -230,4 +235,44 @@ class Wp_Hosting_Benchmarking_Admin {
            // Explanation text
         echo '<p class="description">Please select the region closest to where most of your customers or visitors are based. </p>';
     }
+
+    public function hosting_provider_dropdown_callback() {
+        $providers = $this->api->get_hosting_providers();
+        $selected_provider = get_option('wp_hosting_benchmarking_selected_provider');
+
+        if (!empty($providers)) {
+            echo '<select id="wp_hosting_benchmarking_selected_provider" name="wp_hosting_benchmarking_selected_provider">';
+            echo '<option value="">Select a provider</option>';
+            foreach ($providers as $provider) {
+                $provider_name = esc_attr($provider['name']);
+                echo '<option value="' . $provider_name . '"' . selected($selected_provider, $provider_name, false) . '>';
+                echo esc_html($provider_name);
+                echo '</option>';
+            }
+            echo '</select>';
+            echo '<div id="provider_packages"></div>';
+        } else {
+            echo '<p>No hosting providers available.</p>';
+        }
+    }
+
+    public function ajax_get_provider_packages() {
+        check_ajax_referer('wp_hosting_benchmarking_settings_nonce', 'nonce');
+
+        $provider_name = sanitize_text_field($_POST['provider']);
+        $providers = $this->api->get_hosting_providers();
+
+        $packages = array();
+        foreach ($providers as $provider) {
+            if ($provider['name'] === $provider_name) {
+                $packages = $provider['packages'];
+                break;
+            }
+        }
+
+        wp_send_json_success($packages);
+    }
+
+    
+
 }

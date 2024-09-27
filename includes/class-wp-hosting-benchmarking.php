@@ -128,7 +128,10 @@ class Wp_Hosting_Benchmarking {
         $this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_styles');
         $this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts');
         $this->loader->add_action('admin_menu', $plugin_admin, 'add_plugin_admin_menu');
-//        $this->loader->add_action('wp_ajax_start_latency_test', $plugin_admin, 'start_latency_test');
+
+		$this->loader->add_action('wp_ajax_get_provider_packages', $plugin_admin, 'ajax_get_provider_packages');
+
+		//        $this->loader->add_action('wp_ajax_start_latency_test', $plugin_admin, 'start_latency_test');
  //       $this->loader->add_action('wp_ajax_stop_latency_test', $plugin_admin, 'stop_latency_test');
   //      $this->loader->add_action('wp_ajax_get_latest_results', $plugin_admin, 'get_latest_results');
    //     $this->loader->add_action('wp_ajax_delete_all_results', $plugin_admin, 'delete_all_results');
@@ -146,6 +149,7 @@ class Wp_Hosting_Benchmarking {
 		add_action('wp_ajax_ssl_registration', array($this->ssl_testing, 'handle_ssl_registration'));
 		add_action('wp_ajax_ssl_testing', array($this->ssl_testing, 'handle_ssl_testing'));
 
+ 
 		//	$this->loader->add_action('wp_ajax_get_results_for_time_range', array($this, 'get_results_for_time_range'));
   		
 	}

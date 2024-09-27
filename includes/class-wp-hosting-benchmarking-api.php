@@ -89,4 +89,31 @@ class Wp_Hosting_Benchmarking_API {
     
         return array('error' => 'Unexpected response from SSL Labs API');
     }
+
+    public function get_hosting_providers() {
+        $cache_key = 'wp_hosting_benchmarking_providers';
+        $cached_data = get_transient($cache_key);
+
+        if ($cached_data !== false) {
+            return $cached_data;
+        }
+
+        $response = wp_remote_get('https://assets.fastestwordpress.com/wphostingprovider.json');
+        if (is_wp_error($response)) {
+            return false;
+        }
+
+        $body = wp_remote_retrieve_body($response);
+        $data = json_decode($body, true);
+
+        if (!isset($data['providers']) || !is_array($data['providers'])) {
+            return false;
+        }
+
+        set_transient($cache_key, $data['providers'], WEEK_IN_SECONDS);
+
+        return $data['providers'];
+    }
+
+    
 }
