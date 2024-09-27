@@ -293,7 +293,7 @@ class Wp_Hosting_Benchmarking_Admin {
                     foreach ($provider['packages'] as $package) {
                         $package_type = esc_attr($package['type']);
                         echo '<option value="' . $package_type . '"' . selected($selected_package, $package_type, false) . '>';
-                        //echo esc_html($package_type);
+                        echo esc_html($package_type);
                         echo '</option>';
                     }
                     break;
