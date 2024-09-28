@@ -1,7 +1,8 @@
 <?php
 
 class WP_Hosting_Benchmarking_Server_Performance {
-
+    WP_Hosting_Benchmarking_Server_Performance
+    
     private $plugin_name;
     private $version;
 

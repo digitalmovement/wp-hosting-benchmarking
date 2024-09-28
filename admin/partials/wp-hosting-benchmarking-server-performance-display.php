@@ -119,7 +119,51 @@ jQuery(document).ready(function($) {
     }
     
     function displayResults(data) {
-        // ... (chart creation code remains the same) ...
+        var ctx = document.getElementById('results-chart').getContext('2d');
+        
+        if (chart) {
+            chart.destroy();
+        }
+        
+        chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['CPU & Memory', 'Filesystem', 'Database', 'Object Cache'],
+                datasets: [
+                    {
+                        label: 'Your Results',
+                        data: [
+                            data.cpu_memory,
+                            data.filesystem,
+                            data.database,
+                            data.object_cache
+                        ],
+                        backgroundColor: 'rgba(75, 192, 192, 0.6)'
+                    },
+                    {
+                        label: 'Industry Average',
+                        data: [
+                            data.industry_avg.cpu_memory,
+                            data.industry_avg.filesystem,
+                            data.industry_avg.database,
+                            data.industry_avg.object_cache
+                        ],
+                        backgroundColor: 'rgba(153, 102, 255, 0.6)'
+                    }
+                ]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Time (seconds)'
+                        }
+                    }
+                }
+            }
+        });
     }
     
     updateButtonState(testStatus);

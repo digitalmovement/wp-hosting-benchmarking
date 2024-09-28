@@ -38,11 +38,11 @@ class Wp_Hosting_Benchmarking_Admin {
         $this->gcp_latency = new Wp_Hosting_Benchmarking_GCP_Latency($this->db, $this->api);
         $this->ssl_testing = new Wp_Hosting_Benchmarking_SSL_Testing($this->db, $this->api);
         $this->performance_testing = new WP_Hosting_Benchmarking_Server_Performance($this->db, $this->api);
-   
-      // Hook into 'admin_enqueue_scripts' to enqueue scripts/styles
-      add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
-      add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
-      add_action('admin_init', array($this, 'register_settings'));
+ 
+        // Hook into 'admin_enqueue_scripts' to enqueue scripts/styles
+        add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
+        add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
+        add_action('admin_init', array($this, 'register_settings'));
      }
 
 	private function init_components() {
