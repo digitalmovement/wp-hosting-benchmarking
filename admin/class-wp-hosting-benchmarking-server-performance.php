@@ -17,12 +17,38 @@ class WP_Hosting_Benchmarking_Server_Performance {
         add_action('wp_ajax_wp_hosting_benchmarking_performance_get_results', array($this, 'ajax_performance_get_results'));
     }
 
-    public function enqueue_scripts() {
-        wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', array(), null, true);
-        wp_enqueue_script('jquery-ui-tabs');
-        wp_enqueue_style('jquery-ui-css', 'https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css');
-    }
+    public function enqueue_scripts($hook) {
+        if ('tools_page_wp-hosting-benchmarking-server-performance' !== $hook) {
+            return;
+        }
 
+        wp_enqueue_script('jquery');
+        wp_enqueue_script('jquery-ui-core');
+        wp_enqueue_script('jquery-ui-tabs');
+        
+        // Enqueue jQuery UI CSS
+        wp_enqueue_style('wp-jquery-ui-dialog', includes_url('css/jquery-ui-dialog.min.css'), array(), null);
+
+        wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', array(), '3.7.0', true);
+        
+        wp_enqueue_script(
+            'wp-hosting-benchmarking-server-performance',
+            plugin_dir_url(__FILE__) . 'js/wp-hosting-benchmarking-server-performance.js',
+            array('jquery', 'jquery-ui-core', 'jquery-ui-tabs', 'chart-js'),
+            $this->version,
+            true
+        );
+
+        wp_localize_script(
+            'wp-hosting-benchmarking-server-performance',
+            'wpHostingBenchmarkingPerformance',
+            array(
+                'ajaxurl' => admin_url('admin-ajax.php'),
+                'nonce' => wp_create_nonce('wp_hosting_benchmarking_performance_nonce'),
+                'testStatus' => get_option('wp_hosting_benchmarking_performance_test_status', 'stopped')
+            )
+        );
+    }
     public function display_page() {
         $test_status = get_option('wp_hosting_benchmarking_performance_test_status', 'stopped');
 
