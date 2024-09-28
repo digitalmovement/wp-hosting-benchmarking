@@ -96,7 +96,7 @@ class Wp_Hosting_Benchmarking_API {
     
         if ($cached_data !== false) {
             error_log('Returning cached data');
-   //         return $cached_data;
+            return $cached_data;
         }
     
         $response = wp_remote_get('https://assets.fastestwordpress.com/wphostingprovider.json');
