@@ -27,6 +27,7 @@ class Wp_Hosting_Benchmarking_Admin {
     private $db;
     private $api;
     private $gcp_latency;
+    private $performance_testing;
 
 
 	public function __construct( $plugin_name, $version ) {
@@ -36,7 +37,7 @@ class Wp_Hosting_Benchmarking_Admin {
 		$this->init_components();
         $this->gcp_latency = new Wp_Hosting_Benchmarking_GCP_Latency($this->db, $this->api);
         $this->ssl_testing = new Wp_Hosting_Benchmarking_SSL_Testing($this->db, $this->api);
-
+        $this->performance_testing = new WP_Hosting_Benchmarking_Server_Performance($this->db, $this->api);
    
       // Hook into 'admin_enqueue_scripts' to enqueue scripts/styles
       add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
@@ -189,6 +190,8 @@ class Wp_Hosting_Benchmarking_Admin {
     }
 
     public function display_server_performance_page() {
+        $test_status = get_option('wp_hosting_benchmarking_performance_test_status', 'stopped');
+
         include_once 'partials/wp-hosting-benchmarking-server-performance-display.php';
     }
 
@@ -198,7 +201,7 @@ class Wp_Hosting_Benchmarking_Admin {
     }
 
 
-    
+
     public function display_settings_page() {
         include_once 'partials/wp-hosting-benchmarking-settings-display.php';
     }
