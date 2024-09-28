@@ -126,6 +126,26 @@ class Wp_Hosting_Benchmarking_Admin {
             array($this, 'display_ssl_testing_page') // Callback function
         );
     
+                // New submenu item: Server Performance
+        add_submenu_page(
+            'wp-hosting-benchmarking',
+            'Server Performance',
+            'Server Performance',
+            'manage_options',
+            'wp-hosting-benchmarking-server-performance',
+            array($this, 'display_server_performance_page')
+        );
+    
+        // New submenu item: External Load Testing
+        add_submenu_page(
+            'wp-hosting-benchmarking',
+            'External Load Testing',
+            'External Load Testing',
+            'manage_options',
+            'wp-hosting-benchmarking-external-load',
+            array($this, 'display_external_load_testing_page')
+        );
+
         // Add submenu for Settings
         add_submenu_page(
             'wp-hosting-benchmarking', // Parent slug
@@ -168,9 +188,21 @@ class Wp_Hosting_Benchmarking_Admin {
         include_once 'partials/wp-hosting-benchmarking-ssl-testing-display.php';
     }
 
+    public function display_server_performance_page() {
+        include_once 'partials/wp-hosting-benchmarking-server-performance-display.php';
+    }
+
+    // New method for External Load Testing page
+    public function display_external_load_testing_page() {
+        include_once 'partials/wp-hosting-benchmarking-external-load-testing-display.php';
+    }
+
+
+    
     public function display_settings_page() {
         include_once 'partials/wp-hosting-benchmarking-settings-display.php';
     }
+
 
     /**
      * Register plugin settings.
