@@ -42,6 +42,7 @@ class Wp_Hosting_Benchmarking_Admin {
         // Hook into 'admin_enqueue_scripts' to enqueue scripts/styles
         add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
+        add_action('admin_enqueue_scripts', array($server_performance, 'enqueue_scripts'));
         add_action('admin_init', array($this, 'register_settings'));
      }
 
