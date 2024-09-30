@@ -22,6 +22,9 @@ class Wp_Hosting_Benchmarking_SSL_Testing {
 
         $registered_user = get_option('wp_hosting_benchmarking_registered_user');
         $email = isset($registered_user['email']) ? $registered_user['email'] : 'default@example.com';
+
+
+        // EMail must changed. 
         $email = "jdoe@digitalmovement.co.uk";
         $result = $this->api->test_ssl_certificate(home_url(), $email);
 
