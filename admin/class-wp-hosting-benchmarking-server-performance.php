@@ -61,8 +61,8 @@ class WP_Hosting_Benchmarking_Server_Performance {
     }
 
     public function ajax_performance_run_test() {
-        check_ajax_referer('wp_hosting_benchmarking_performance_run_test');
-        
+        check_ajax_referer('wp_hosting_benchmarking_performance_nonce','nonce');
+      
         // Run tests in the background
         $this->run_performance_tests();
         
