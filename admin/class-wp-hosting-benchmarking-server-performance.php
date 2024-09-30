@@ -4,7 +4,6 @@ class WP_Hosting_Benchmarking_Server_Performance {
 
     private $plugin_name;
     private $version;
-
     private $db;
     private $api;
 
@@ -12,8 +11,11 @@ class WP_Hosting_Benchmarking_Server_Performance {
         $this->db = $db;
         $this->api = $api;
         
-        
+        add_action('wp_ajax_wp_hosting_benchmarking_performance_toggle_test', array($this, 'ajax_performance_toggle_test'));
+        add_action('wp_ajax_wp_hosting_benchmarking_performance_run_test', array($this, 'ajax_performance_run_test'));
+        add_action('wp_ajax_wp_hosting_benchmarking_performance_get_results', array($this, 'ajax_performance_get_results'));
     }
+
 
     public function enqueue_scripts() {
    
@@ -52,15 +54,22 @@ class WP_Hosting_Benchmarking_Server_Performance {
     }
 
     public function ajax_performance_toggle_test() {
-        check_ajax_referer('wp_hosting_benchmarking_performance_toggle_test');
+        check_ajax_referer('wp_hosting_benchmarking_performance_nonce', 'nonce');
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Insufficient permissions');
+        }
+
         $status = isset($_POST['status']) ? sanitize_text_field($_POST['status']) : 'stopped';
         update_option('wp_hosting_benchmarking_performance_test_status', $status);
         wp_send_json_success();
     }
 
     public function ajax_performance_run_test() {
-        check_ajax_referer('wp_hosting_benchmarking_performance_nonce','nonce');
-      
+        check_ajax_referer('wp_hosting_benchmarking_performance_nonce', 'nonce');
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Insufficient permissions');
+        }
+
         // Run tests in the background
         $this->run_performance_tests();
         
@@ -68,7 +77,10 @@ class WP_Hosting_Benchmarking_Server_Performance {
     }
 
     public function ajax_performance_get_results() {
-        check_ajax_referer('wp_hosting_benchmarking_performance_get_results');
+        check_ajax_referer('wp_hosting_benchmarking_performance_nonce', 'nonce');
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Insufficient permissions');
+        }
         
         $results = $this->get_test_results();
         $industry_avg = $this->get_industry_averages();
