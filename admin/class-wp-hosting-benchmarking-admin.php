@@ -99,13 +99,13 @@ class Wp_Hosting_Benchmarking_Admin {
             'wpHostingBenchmarkingPerformance',
             array(
                 'ajaxurl' => admin_url('admin-ajax.php'),
-                'nonce' => wp_create_nonce('wp_hosting_benchmarking_performance_nonce'),
+                'nonce1' => wp_create_nonce('wp_hosting_benchmarking_performance_nonce'),
                 'testStatus' => get_option('wp_hosting_benchmarking_performance_test_status', 'stopped')
             )
         );
 
 
-
+        
 
     }
 
