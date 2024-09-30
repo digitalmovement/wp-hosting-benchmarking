@@ -83,10 +83,9 @@ class Wp_Hosting_Benchmarking_Admin {
         wp_enqueue_script($this->plugin_name . '-settings', plugin_dir_url(__FILE__) . 'js/wp-hosting-benchmarking-settings.js', array('jquery'), $this->version, false);
         wp_localize_script($this->plugin_name . '-settings', 'wpHostingBenchmarkingSettings', array(
             'ajax_url' => admin_url('admin-ajax.php'),
-            'nonce' => wp
-            _create_nonce('wp_hosting_benchmarking_settings_nonce'),
+            'nonce' => wp_create_nonce('wp_hosting_benchmarking_settings_nonce'),
         ));
-        
+
           // Enqueue the server performance script
         wp_enqueue_script($this->plugin_name . '-server-performance', plugin_dir_url(__FILE__) . 'js/wp-hosting-benchmarking-server-performance.js', array('jquery', 'chart-js'), $this->version, true);
 
