@@ -15,11 +15,9 @@ class WP_Hosting_Benchmarking_Server_Performance {
         
     }
 
-    public function enqueue_scripts($hook) {
-        if ('tools_page_wp-hosting-benchmarking-server-performance' !== $hook) {
-            return;
-        }
-
+    public function enqueue_scripts() {
+   
+   
         wp_enqueue_script('jquery');
         wp_enqueue_script('jquery-ui-core');
         wp_enqueue_script('jquery-ui-tabs');
