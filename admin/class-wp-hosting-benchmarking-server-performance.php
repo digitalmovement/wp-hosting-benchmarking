@@ -12,9 +12,7 @@ class WP_Hosting_Benchmarking_Server_Performance {
         $this->db = $db;
         $this->api = $api;
     
-        add_action('wp_ajax_wp_hosting_benchmarking_performance_toggle_test', array($this, 'ajax_performance_toggle_test'));
-        add_action('wp_ajax_wp_hosting_benchmarking_performance_run_test', array($this, 'ajax_performance_run_test'));
-        add_action('wp_ajax_wp_hosting_benchmarking_performance_get_results', array($this, 'ajax_performance_get_results'));
+        
     }
 
     public function enqueue_scripts($hook) {
