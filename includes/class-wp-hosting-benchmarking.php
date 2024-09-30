@@ -152,11 +152,11 @@ class Wp_Hosting_Benchmarking {
 		add_action('wp_ajax_ssl_testing', array($this->ssl_testing, 'handle_ssl_testing'));
 
  
-		add_action('wp_ajax_wp_hosting_benchmarking_performance_toggle_test', array($this, 'ajax_performance_toggle_test'));
-        add_action('wp_ajax_wp_hosting_benchmarking_performance_run_test', array($this, 'ajax_performance_run_test'));
-        add_action('wp_ajax_wp_hosting_benchmarking_performance_get_results', array($this, 'ajax_performance_get_results'));
+		add_action('wp_ajax_wp_hosting_benchmarking_performance_toggle_test', array($this->performance_testing, 'ajax_performance_toggle_test'));
+        add_action('wp_ajax_wp_hosting_benchmarking_performance_run_test', array($this->performance_testing, 'ajax_performance_run_test'));
+        add_action('wp_ajax_wp_hosting_benchmarking_performance_get_results', array($this->performance_testing, 'ajax_performance_get_results'));
 
-		
+
 		//	$this->loader->add_action('wp_ajax_get_results_for_time_range', array($this, 'get_results_for_time_range'));
   		
 	}
