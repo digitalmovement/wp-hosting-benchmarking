@@ -11,14 +11,12 @@ class WP_Hosting_Benchmarking_Server_Performance {
     public function __construct($db, $api) {
         $this->db = $db;
         $this->api = $api;
-    
+        $this->enqueue_scripts();
         
     }
 
-    public function enqueue_scripts($hook) {
-        if ('tools_page_wp-hosting-benchmarking-server-performance' !== $hook) {
-            return;
-        }
+    public function enqueue_scripts() {
+      
 
         wp_enqueue_script('jquery');
         wp_enqueue_script('jquery-ui-core');
