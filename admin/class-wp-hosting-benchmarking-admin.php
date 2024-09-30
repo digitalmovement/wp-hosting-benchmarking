@@ -85,6 +85,26 @@ class Wp_Hosting_Benchmarking_Admin {
             'nonce' => wp_create_nonce('wp_hosting_benchmarking_settings_nonce'),
         ));
 
+        // Server perf scripts
+        wp_enqueue_script(
+            'wp-hosting-benchmarking-server-performance',
+            plugin_dir_url(__FILE__) . 'js/wp-hosting-benchmarking-server-performance.js',
+            array('jquery', 'jquery-ui-core', 'jquery-ui-tabs', 'chart-js'),
+            $this->version,
+            true
+        );
+
+        wp_localize_script(
+            'wp-hosting-benchmarking-server-performance',
+            'wpHostingBenchmarkingPerformance',
+            array(
+                'ajaxurl' => admin_url('admin-ajax.php'),
+                'nonce' => wp_create_nonce('wp_hosting_benchmarking_performance_nonce'),
+                'testStatus' => get_option('wp_hosting_benchmarking_performance_test_status', 'stopped')
+            )
+        );
+
+
 
 
     }

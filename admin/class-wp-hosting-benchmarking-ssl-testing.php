@@ -253,11 +253,6 @@ class Wp_Hosting_Benchmarking_SSL_Testing {
     // Add the format_ssl_test_results function here
     public function format_ssl_test_results($result) {
 
-  
-        $output .= '<pre>--';
-
-        $output .= print_r($result,true); 
-        $output .= '</pre>';
     
         // Certificate Information
         $output = '<div class="ssl-test-results" id="ssl-test-results-' . uniqid() . '">';

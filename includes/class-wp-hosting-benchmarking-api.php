@@ -99,7 +99,7 @@ class Wp_Hosting_Benchmarking_API {
             return $cached_data;
         }
     
-        $response = wp_remote_get('https://assets.fastestwordpress.com/wphostingprovider.json');
+        $response = wp_remote_get('https://assets.wpspeedtestpro.com/wphostingprovider.json');
         if (is_wp_error($response)) {
             error_log('Error fetching hosting providers: ' . $response->get_error_message());
             return false;
